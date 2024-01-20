@@ -3,7 +3,7 @@ import { SketchPicker } from "react-color";
 import { ChromePicker } from "react-color";
 import styled from "styled-components";
 import html2canvas from "html2canvas";
-import { Button, Input } from "antd";
+import { Button, Input, Row, Col, Space } from "antd";
 
 const Swatch = styled.div`
     padding: 5px;
@@ -113,48 +113,89 @@ function App() {
 
   return (
     <>
-      <SketchPicker color={color} onChange={colorChange} />
+      <Row justify="center">
+        <Col span={24}>
+          <Space direction="horizontal">
+            <Input
+                ref={inputRef}
+                addonBefore="Font Size"
+                addonAfter="px"
+                size="large"
+                type="number"
+                name="fontSize"
+                defaultValue={fontSize}
+                onChange={fontSizeChange}
+            />
 
-      <div>
-        <Input ref={inputRef} addonBefore="Font Size" addonAfter="px" type="number" name="fontSize" defaultValue={fontSize} onChange={fontSizeChange} />
-        Color:
-        <Swatch onClick={ handleClick }>
+            <Input
+                ref={inputRef}
+                addonBefore="Banner Width"
+                addonAfter="px"
+                size="large"
+                type="number"
+                name="width"
+                defaultValue={width}
+                onChange={widthChange}
+            />
+            <Input
+                ref={inputRef}
+                addonBefore="Banner Height"
+                addonAfter="px"
+                size="large"
+                type="number"
+                name="height"
+                defaultValue={height}
+                onChange={heightChange}
+            />
+          </Space>
+        </Col>
+      </Row>
+
+      <Row justify="center">
+        <Col>
+          <SketchPicker color={color} onChange={colorChange} />
+
+          Color:
+          <Swatch onClick={ handleClick }>
+            <div
+                id="colorChip"
+                style={{
+                  backgroundColor: fontColor
+                }}
+            >
+            </div>
+          </Swatch>
+          { displayColorPicker ? <PopOver>
+            <Cover onClick={ handleClose } />
+            <ChromePicker color={ fontColor } onChange={ fontColorChange } />
+          </PopOver> : null }
+        </Col>
+
+        <Col>
           <div
-              id="colorChip"
+              id="canvasContainer"
+              ref={canvasRef}
               style={{
-                backgroundColor: fontColor
+                fontSize: `${fontSize}px`,
+                width: `${width}px`,
+                height: `${height}px`,
               }}
-          ></div>
-        </Swatch>
-        { displayColorPicker ? <PopOver>
-          <Cover onClick={ handleClose } />
-          <ChromePicker color={ fontColor } onChange={ fontColorChange } />
-        </PopOver> : null }
+          >
+            <div
+                id="editor"
+                ref={editorRef}
+                contentEditable="true"
+                spellCheck="false"
+            >
+            </div>
+          </div>
+        </Col>
+      </Row>
 
-        Width: <input ref={inputRef} type="number" name="width" value={width} onChange={widthChange} />
-        Height: <input ref={inputRef} type="number" name="height" value={height} onChange={heightChange} />
-      </div>
-
-      <div
-        id="canvasContainer"
-        ref={canvasRef}
-        style={{
-          fontSize: `${fontSize}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-        }}
-      >
-        <div
-          id="editor"
-          ref={editorRef}
-          contentEditable="true"
-          spellCheck="false"
-        >
-        </div>
-      </div>
-
-      <Button type="primary" size="large" shape="round" onClick={downloadImage}>Download Banner</Button>
-      <Button type="default" size="large" shape="round" onClick={() => randomColor()}>Random Background Color</Button>
+      <Row justify="center">
+        <Button type="primary" size="large" shape="round" onClick={downloadImage}>Download Banner</Button>
+        <Button type="default" size="large" shape="round" onClick={() => randomColor()}>Random Background Color</Button>
+      </Row>
     </>
   )
 }
