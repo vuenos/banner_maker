@@ -1,5 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lobster&family=Noto+Sans+KR:wght@500&family=Noto+Serif+KR:wght@500&family=Nunito:wght@500&family=PT+Serif&family=Roboto:wght@500&family=Yeon+Sung&display=swap');
+
+.ff-bebas-neue {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.ff-lobster {
+  font-family: 'Lobster', sans-serif;
+}
+
+.ff-nunito {
+  font-family: 'Nunito', sans-serif;
+}
+
+.ff-PT-serif {
+  font-family: 'PT Serif', serif;
+}
+
+.ff-noto-serif {
+  font-family: 'Noto Serif KR', serif;
+}
+
+.ff-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+.ff-noto-kr {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.ff-yeon-sung {
+  font-family: 'Yeon Sung', system-ui;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Noto Sans KR', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -73,6 +107,12 @@ button:focus-visible {
 
 [contenteditable] {
   outline: 0 solid transparent;
+}
+
+#colorChip {
+  width: 36px;
+  height: 14px;
+  border-radius: 2px;
 }
 
 @media (prefers-color-scheme: light) {

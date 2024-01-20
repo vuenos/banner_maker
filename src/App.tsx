@@ -1,8 +1,9 @@
-import {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { SketchPicker } from "react-color";
 import { ChromePicker } from "react-color";
 import styled from "styled-components";
 import html2canvas from "html2canvas";
+import { Button, Input } from "antd";
 
 const Swatch = styled.div`
     padding: 5px;
@@ -36,7 +37,7 @@ function App() {
   const [fontSize, setFontSize] = useState("40")
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef(null);
   const canvasRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -68,13 +69,6 @@ function App() {
   const randomColor = () => {
     setColor(getRandomColor())
   }
-
-  const ColorChip = styled.div`
-    width: 36px;
-    height: 14px;
-    border-radius: 2px;
-    background: ${fontColor};
-  `;
 
   const downloadImage = async () => {
     const canvasContainer = canvasRef.current as HTMLDivElement;
@@ -122,10 +116,15 @@ function App() {
       <SketchPicker color={color} onChange={colorChange} />
 
       <div>
-        Font Size: <input ref={inputRef} type="number" name="fontSize" value={fontSize} onChange={fontSizeChange} />
+        <Input ref={inputRef} addonBefore="Font Size" addonAfter="px" type="number" name="fontSize" defaultValue={fontSize} onChange={fontSizeChange} />
         Color:
         <Swatch onClick={ handleClick }>
-          <ColorChip />
+          <div
+              id="colorChip"
+              style={{
+                backgroundColor: fontColor
+              }}
+          ></div>
         </Swatch>
         { displayColorPicker ? <PopOver>
           <Cover onClick={ handleClose } />
@@ -154,8 +153,8 @@ function App() {
         </div>
       </div>
 
-      <button onClick={downloadImage}>이미지 다운로드</button>
-      <button onClick={() => randomColor()}>Random Color</button>
+      <Button type="primary" size="large" shape="round" onClick={downloadImage}>Download Banner</Button>
+      <Button type="default" size="large" shape="round" onClick={() => randomColor()}>Random Background Color</Button>
     </>
   )
 }
