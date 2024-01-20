@@ -56,11 +56,23 @@ button:focus-visible {
 }
 
 #canvasContainer {
+  overflow: hidden;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
+  background-color: #535bf2;
+  color: #FFFFFF;
 }
 #editor {
-  position: absolute;
-  top: 0;
+  border: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+[contenteditable] {
+  outline: 0 solid transparent;
 }
 
 @media (prefers-color-scheme: light) {
