@@ -1,4 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lobster&family=Noto+Sans+KR:wght@500&family=Noto+Serif+KR:wght@500&family=Nunito:wght@500&family=PT+Serif&family=Roboto:wght@500&family=Yeon+Sung&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Song+Myung&family=Nanum+Pen+Script&family=Single+Day&family=East+Sea+Dokdo&family=Bebas+Neue&family=Lobster&family=Noto+Sans+KR:wght@500&family=Noto+Serif+KR:wght@500&family=Nunito:wght@500&family=PT+Serif&family=Roboto:wght@500&family=Yeon+Sung&display=swap');
+
+.ff-song-myung {
+  font-family: 'Song Myung', serif;
+}
+
+.ff-nanum-pen {
+  font-family: 'Nanum Pen Script', cursive;
+}
+
+.ff-single-day {
+  font-family: 'Single Day', cursive;
+}
+.ff-dokdo {
+  font-family: 'East Sea Dokdo', sans-serif;
+}
 
 .ff-bebas-neue {
   font-family: 'Bebas Neue', sans-serif;
@@ -63,6 +78,9 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  justify-content: center;
+  background-color: #333;
+  color: #FFFFFF;
 }
 
 h1 {
@@ -97,6 +115,7 @@ button:focus-visible {
   justify-content: center;
   height: 320px;
   background-color: #535bf2;
+  font-family: 'Noto Sans KR', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   color: #FFFFFF;
 }
 #editor {
@@ -109,10 +128,12 @@ button:focus-visible {
   outline: 0 solid transparent;
 }
 
-#colorChip {
-  width: 36px;
-  height: 14px;
-  border-radius: 2px;
+.colorChip {
+  width: 24px;
+  height: 100%;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+  margin-left: 8px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -126,4 +147,13 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Reset */
+.ant-input-group-addon {
+  background-color: #eaeaea !important;
+}
+
+.ant-input-group-addon + .ant-input {
+  text-align: right !important;
 }
