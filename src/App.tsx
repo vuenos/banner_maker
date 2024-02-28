@@ -29,7 +29,7 @@ const PopOver = styled.div`
     position: absolute;
     top: 40px;
     right: 0;
-    z-index: 2;
+    z-index: 2;  
   `;
 
 const Cover = styled.div`
@@ -178,6 +178,12 @@ function App() {
       fontSelect.style.fontFamily = fontFamily;
     }
   }, [fontFamily]);
+
+  useEffect(() => {
+    if(editorRef.current) {
+      editorRef.current.focus();
+    }
+  }, []);
 
   return (
     <>
