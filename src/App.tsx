@@ -2,14 +2,17 @@ import React, {useEffect, useState, useRef, ChangeEvent} from "react";
 import { SketchPicker } from "react-color";
 import styled from "styled-components";
 import html2canvas from "html2canvas";
-import {Button, Input, Row, Col, Typography, Select} from "antd";
+import {Button, Input, Row, Col, Typography, Select, Tag} from "antd";
 import {
   BgColorsOutlined, CloudDownloadOutlined,
   ColumnHeightOutlined,
   ColumnWidthOutlined, ExclamationCircleOutlined,
   FontColorsOutlined,
-  FontSizeOutlined, MessageOutlined, PictureOutlined
+  FontSizeOutlined, MailOutlined, MessageOutlined, PictureOutlined
 } from "@ant-design/icons";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize("G-TBJKD1RKRY");
 
 const { Title, Text } = Typography;
 
@@ -133,7 +136,7 @@ function App() {
     setHeight(h);
   };
 
-  const ratioZoomHandler = (ratio: number) => {
+  const ratioZoomHandler = (ratio: string) => {
     // @ts-ignore
     setWidth((prevWidth) => prevWidth * ratio);
     // @ts-ignore
@@ -225,9 +228,13 @@ function App() {
 
   return (
     <>
+      <Tag bordered={false} style={{ position: "fixed", top: "16px", right: "16px", color: "#FFFFFF" }}>
+        <MailOutlined style={{ marginRight: "4px" }} />
+        <a href="mailto: vuenos@gmail.com" style={{ color: "#FFFFFF" }}>Contact</a>
+      </Tag>
       <Row justify="center">
         <Title level={1} style={{ marginBlock: 0, fontSize: 0, height: 0 }}>
-          You can create YouTube thumbnails, TikTok thumbnails, and YouTube Shorts thumbnails for free.
+          Free Youtube Thumbnail and Banner Maker - You can create Youtube and Tiktok Thumbnail for free
         </Title>
         <Title id="page-title" style={{ marginTop: 0 }} level={2}>Banner created by entering text</Title>
       </Row>
@@ -266,16 +273,16 @@ function App() {
           </Row>
 
           <Row style={{ marginTop: "16px" }}>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(0.75)}>x 0.75</Button>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(0.5)} style={{ marginLeft: "8px" }}>x 0.5</Button>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(0.25)} style={{ marginLeft: "8px" }}>x 0.25</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("0.75")}>x 0.75</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("0.5")} style={{ marginLeft: "8px" }}>x 0.5</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("0.25")} style={{ marginLeft: "8px" }}>x 0.25</Button>
           </Row>
 
           <Row style={{ marginTop: "16px" }}>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(1.25)}>x 1.25</Button>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(1.5)} style={{ marginLeft: "8px" }}>x 1.5</Button>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(1.75)} style={{ marginLeft: "8px" }}>x 1.75</Button>
-            <Button type="default" size="small" onClick={() => ratioZoomHandler(2)} style={{ marginLeft: "8px" }}>x 2</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("1.25")}>x 1.25</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("1.5")} style={{ marginLeft: "8px" }}>x 1.5</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("1.75")} style={{ marginLeft: "8px" }}>x 1.75</Button>
+            <Button type="default" size="small" onClick={() => ratioZoomHandler("2")} style={{ marginLeft: "8px" }}>x 2</Button>
           </Row>
 
           <Row style={{ marginTop: "16px" }}>
