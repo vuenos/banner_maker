@@ -235,7 +235,8 @@ function App() {
       </Tag>
       <Row justify="center">
         <Title level={1} style={{ marginBlock: 0, fontSize: 0, height: 0 }}>
-          Free Youtube Thumbnail and Banner Maker - You can create Youtube and Tiktok Thumbnail for free
+          Free Youtube Thumbnail and Banner Maker - You can create Youtube and Tiktok Thumbnail for free<br />
+          무료 Youtube 썸네일 및 배너 메이커 - Youtube 및 Tiktok 썸네일을 무료로 만들 수 있습니다.
         </Title>
         <Title id="page-title" style={{ marginTop: 0 }} level={2}>Banner created by entering text</Title>
       </Row>
