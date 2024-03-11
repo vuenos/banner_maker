@@ -134,7 +134,9 @@ function App() {
   };
 
   const ratioZoomHandler = (ratio: number) => {
+    // @ts-ignore
     setWidth((prevWidth) => prevWidth * ratio);
+    // @ts-ignore
     setHeight((prevHeight) => prevHeight * ratio);
   }
 
