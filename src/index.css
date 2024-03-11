@@ -157,3 +157,8 @@ button:focus-visible {
 .ant-input-group-addon + .ant-input {
   text-align: right !important;
 }
+
+.uploadPhoto svg {
+  width: 24px;
+  height: 24px;
+}
