@@ -145,6 +145,12 @@ function App() {
   }
 
   const downloadImage = async () => {
+    ReactGA.event({
+      category: 'Button',
+      action: 'Click',
+      label: 'Download button click',
+    });
+
     const canvasContainer = canvasRef.current as HTMLDivElement;
     const canvas = await html2canvas(canvasContainer);
     const dataURL: string = canvas.toDataURL('image/png');
