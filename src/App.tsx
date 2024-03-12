@@ -371,7 +371,7 @@ function App() {
           </Row>
 
           <Row style={{ marginTop: "16px" }}>
-            <Button type="primary" size="large" shape="round" block style={{ marginTop: "16px" }} icon={<CloudDownloadOutlined />} onClick={downloadImage}>Download</Button>
+            <Button id="download-button" type="primary" size="large" shape="round" block style={{ marginTop: "16px" }} icon={<CloudDownloadOutlined />} onClick={downloadImage}>Download</Button>
             <Button type="default" size="large" shape="round" block style={{ marginTop: "16px" }} icon={<BgColorsOutlined />} onClick={() => randomColor()}>Random</Button>
             <Button type="default" size="large" shape="round" block style={{ marginTop: "16px" }} icon={<MessageOutlined />} onClick={() => handleRandomWording()}>Random Words</Button>
           </Row>
