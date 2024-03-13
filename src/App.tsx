@@ -10,7 +10,8 @@ import {
   FontColorsOutlined,
   FontSizeOutlined, MailOutlined, MessageOutlined, PictureOutlined
 } from "@ant-design/icons";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import ReactGA from "react-ga4";
 
 ReactGA.initialize("G-TBJKD1RKRY");
@@ -417,6 +418,7 @@ function App() {
 
       </Row>
       <Analytics />
+      <SpeedInsights />
     </>
   )
 }
