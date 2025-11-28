@@ -75,12 +75,14 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  place-items: flex-start;
   min-width: 320px;
   min-height: 100vh;
   justify-content: center;
   background-color: #333;
   color: #FFFFFF;
+  padding-top: 80px;
+  padding-bottom: 20px;
 }
 
 h1 {
@@ -113,10 +115,22 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 320px;
   background-color: #535bf2;
   font-family: 'Noto Sans KR', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   color: #FFFFFF;
+  margin: 0 auto;
+}
+
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+  padding: 0 8px;
+}
+
+.canvas-wrapper #canvasContainer {
+  flex-shrink: 0;
 }
 #editor {
   border: 0;
@@ -173,10 +187,108 @@ h1.ant-typography {
   color: #FFFFFF;
   font-size: 28px;
   font-family: 'Lobster', serif;
+  z-index: 1000;
 }
 
-h1.ant-typography img {margin-right: 8px}
+h1.ant-typography img {
+  margin-right: 8px;
+}
 
 h2.ant-typography {
   font-size: 20px;
+}
+
+/* 모바일 반응형 스타일 */
+@media (max-width: 768px) {
+  body {
+    padding-top: 100px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  h1.ant-typography {
+    font-size: 20px;
+    top: 8px;
+    left: 8px;
+  }
+
+  h1.ant-typography img {
+    width: 24px;
+    height: 24px;
+  }
+
+  h2.ant-typography {
+    font-size: 16px;
+  }
+
+  .canvas-wrapper {
+    padding: 0 4px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .canvas-wrapper #canvasContainer {
+    max-width: calc(100vw - 32px) !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  /* 모바일에서 canvasContainer가 화면을 벗어나지 않도록 */
+  @media (max-width: 768px) {
+    #canvasContainer {
+      max-width: calc(100vw - 32px) !important;
+    }
+  }
+
+  .ant-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .ant-input-group-wrapper,
+  .ant-input-group {
+    width: 100% !important;
+  }
+
+  .ant-input {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  body {
+    padding-top: 90px;
+  }
+
+  h1.ant-typography {
+    font-size: 18px;
+  }
+
+  h2.ant-typography {
+    font-size: 14px;
+  }
+
+  .ant-btn-sm {
+    font-size: 12px;
+    padding: 4px 8px;
+    min-height: 32px;
+  }
+
+  .ant-input-lg {
+    font-size: 14px;
+  }
+
+  .ant-select-lg {
+    font-size: 14px;
+  }
+
+  .ant-btn {
+    min-height: 40px;
+  }
 }
