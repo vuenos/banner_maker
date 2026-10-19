@@ -1,52 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Song+Myung&family=Nanum+Pen+Script&family=Single+Day&family=East+Sea+Dokdo&family=Bebas+Neue&family=Lobster&family=Noto+Sans+KR:wght@500&family=Noto+Serif+KR:wght@500&family=Nunito:wght@500&family=PT+Serif&family=Roboto:wght@500&family=Yeon+Sung&display=swap');
-
-.ff-song-myung {
-  font-family: 'Song Myung', serif;
-}
-
-.ff-nanum-pen {
-  font-family: 'Nanum Pen Script', cursive;
-}
-
-.ff-single-day {
-  font-family: 'Single Day', cursive;
-}
-.ff-dokdo {
-  font-family: 'East Sea Dokdo', sans-serif;
-}
-
-.ff-bebas-neue {
-  font-family: 'Bebas Neue', sans-serif;
-}
-
-.ff-lobster {
-  font-family: 'Lobster', sans-serif;
-}
-
-.ff-nunito {
-  font-family: 'Nunito', sans-serif;
-}
-
-.ff-PT-serif {
-  font-family: 'PT Serif', serif;
-}
-
-.ff-noto-serif {
-  font-family: 'Noto Serif KR', serif;
-}
-
-.ff-roboto {
-  font-family: 'Roboto', sans-serif;
-}
-
-.ff-noto-kr {
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.ff-yeon-sung {
-  font-family: 'Yeon Sung', system-ui;
-}
-
 :root {
   font-family: 'Noto Sans KR', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -85,6 +36,17 @@ body {
   padding-bottom: 20px;
 }
 
+#root {
+  width: min(100%, 100vw);
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+
+.ant-col {
+  min-width: 0;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -110,32 +72,233 @@ button:focus-visible {
 }
 
 #canvasContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
   overflow: hidden;
+  color: #ffffff;
+}
+
+.preview-frame {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: auto;
+}
+
+.preview-slot {
   position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.text-block {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88%;
+}
+
+.text-grip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  cursor: grab;
+}
+
+.safe-area {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px dashed rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.page-heading {
+  padding: 0 16px 8px;
+}
+
+.editor-row {
+  padding: 0 12px 12px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.control-label {
+  margin: 0;
+  color: #d0d0d0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.control-note {
+  margin: 0;
+  color: #9a9a9a;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.split-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #535bf2;
-  font-family: 'Noto Sans KR', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color: #FFFFFF;
-  margin: 0 auto;
+  gap: 8px;
+  min-width: 0;
 }
 
-.canvas-wrapper {
+.split-row > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.font-row .ant-select {
+  flex: 1.3 1 0;
+  min-width: 0;
+}
+
+.align-row > .button-row {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  margin-top: 0;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+
+.preset-grid button.ant-btn {
   display: flex;
-  justify-content: center;
-  width: 100%;
-  overflow-x: auto;
-  padding: 0 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 4px 6px;
 }
 
-.canvas-wrapper #canvasContainer {
-  flex-shrink: 0;
+.preset-grid .preset-name,
+.preset-grid .preset-meta {
+  display: block;
 }
+
+.preset-name {
+  font-weight: 700;
+}
+
+.preset-meta {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.button-row,
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+}
+
+.controls .button-row > .ant-btn {
+  flex: 0 0 auto;
+  min-width: 32px;
+}
+
+.swatch-row {
+  flex-wrap: nowrap;
+}
+
+.swatch-row > button {
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.inline-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-row .control-label {
+  margin: 0;
+}
+
+.inline-row .button-row {
+  margin-top: 0;
+  flex: 1 1 auto;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 6px;
+}
+
+.action-row .ant-btn {
+  width: 100%;
+  padding-inline: 8px;
+}
+
+.controls .ant-input-group-addon {
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.controls .ant-btn {
+  min-height: 32px;
+}
+
+.button-row button.ant-btn[disabled] {
+  background: #3a3a3a;
+  color: rgba(255, 255, 255, 0.72);
+  border-color: transparent;
+}
+
+.button-row button.ant-btn[disabled] .anticon {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.swatch-row {
+  position: relative;
+  align-items: center;
+}
+
+.edit-hint {
+  display: block !important;
+  margin-top: 8px !important;
+  color: #aaa !important;
+  text-align: right;
+}
+
 #editor {
   border: 0;
   line-height: 1.2;
-  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  outline: none;
 }
 
 [contenteditable] {
@@ -143,11 +306,11 @@ button:focus-visible {
 }
 
 .colorChip {
-  width: 24px;
-  height: 100%;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
-  margin-left: 8px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -196,14 +359,23 @@ h1.ant-typography img {
 
 h2.ant-typography {
   font-size: 20px;
+  color: #ffffff;
 }
 
 /* 모바일 반응형 스타일 */
 @media (max-width: 768px) {
   body {
-    padding-top: 100px;
+    padding-top: 52px;
     padding-left: 8px;
     padding-right: 8px;
+  }
+
+  .page-heading {
+    padding: 0 8px 4px;
+  }
+
+  .editor-row {
+    padding: 0 4px 8px;
   }
 
   h1.ant-typography {
@@ -219,26 +391,6 @@ h2.ant-typography {
 
   h2.ant-typography {
     font-size: 16px;
-  }
-
-  .canvas-wrapper {
-    padding: 0 4px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .canvas-wrapper #canvasContainer {
-    max-width: calc(100vw - 32px) !important;
-    width: auto !important;
-    height: auto !important;
-  }
-
-  /* 모바일에서 canvasContainer가 화면을 벗어나지 않도록 */
-  @media (max-width: 768px) {
-    #canvasContainer {
-      max-width: calc(100vw - 32px) !important;
-    }
   }
 
   .ant-row {
@@ -263,7 +415,7 @@ h2.ant-typography {
 
 @media (max-width: 576px) {
   body {
-    padding-top: 90px;
+    padding-top: 48px;
   }
 
   h1.ant-typography {
@@ -289,6 +441,6 @@ h2.ant-typography {
   }
 
   .ant-btn {
-    min-height: 40px;
+    min-height: 32px;
   }
 }
