@@ -46,16 +46,39 @@ export const DEFAULT_BANNER: Banner = {
 export const PRESETS: {
     id: string;
     label: string;
+    tooltip: string;
     width: number;
     height: number;
     guide: Guide;
 }[] = [
-    { id: "16:9", label: "가로 영상", width: 1920, height: 1080, guide: null },
-    { id: "9:16", label: "세로 영상", width: 1080, height: 1920, guide: null },
-    { id: "youtube", label: "썸네일", width: 1280, height: 720, guide: null },
+    {
+        id: "16:9",
+        label: "유튜브 영상",
+        tooltip: "가로 영상 16:9 · 1920×1080",
+        width: 1920,
+        height: 1080,
+        guide: null,
+    },
+    {
+        id: "9:16",
+        label: "숏폼 영상",
+        tooltip: "세로 영상 9:16 · 쇼츠·틱톡·릴스 · 1080×1920",
+        width: 1080,
+        height: 1920,
+        guide: null,
+    },
+    {
+        id: "youtube",
+        label: "유튜브 썸네일",
+        tooltip: "영상 목록에 보이는 미리보기 이미지 · 1280×720",
+        width: 1280,
+        height: 720,
+        guide: null,
+    },
     {
         id: "channel",
-        label: "채널 배너",
+        label: "유튜브 채널 배너",
+        tooltip: "채널 상단 배너 · 2560×1440 · 점선은 안전 영역",
         width: 2560,
         height: 1440,
         guide: "channel",

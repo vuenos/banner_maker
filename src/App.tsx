@@ -11,7 +11,15 @@ import { createPortal } from "react-dom";
 import { SketchPicker } from "react-color";
 import styled from "styled-components";
 import html2canvas from "html2canvas";
-import { Button, Col, Input, Row, Typography, Select, Tag, message } from "antd";
+import {
+    Button,
+    ConfigProvider,
+    Input,
+    Select,
+    Tooltip,
+    theme,
+    message,
+} from "antd";
 import {
     AlignCenterOutlined,
     AlignLeftOutlined,
@@ -19,12 +27,16 @@ import {
     BgColorsOutlined,
     CloudDownloadOutlined,
     DeleteOutlined,
+    DesktopOutlined,
     DragOutlined,
+    LayoutOutlined,
     MailOutlined,
     MessageOutlined,
+    MobileOutlined,
     PictureOutlined,
     RedoOutlined,
     UndoOutlined,
+    YoutubeOutlined,
 } from "@ant-design/icons";
 import { Analytics } from "@vercel/analytics/react";
 import { track } from "@vercel/analytics";
@@ -41,25 +53,55 @@ import {
 } from "./bannerModel";
 import { useBannerState } from "./useBannerState";
 
-const { Title, Text } = Typography;
-
 type Picker = "bg" | "font" | "stroke" | null;
 type Zoom = "fit" | "50" | "100";
 
+const PRESET_ICONS: Record<string, ReactNode> = {
+    "16:9": <DesktopOutlined />,
+    "9:16": <MobileOutlined />,
+    youtube: <YoutubeOutlined />,
+    channel: <LayoutOutlined />,
+};
+
+const STUDIO_THEME = {
+    algorithm: theme.darkAlgorithm,
+    token: {
+        colorPrimary: "#E85D4C",
+        colorBgContainer: "#2A2B30",
+        colorBgElevated: "#32333A",
+        colorBorder: "#3A3B42",
+        colorText: "#E8E8EA",
+        colorTextSecondary: "#9A9AA3",
+        borderRadius: 10,
+        fontFamily:
+            "'Noto Sans KR', system-ui, -apple-system, Segoe UI, sans-serif",
+    },
+    components: {
+        Button: {
+            primaryShadow: "none",
+            defaultShadow: "none",
+        },
+        Input: {
+            addonBg: "#3A3B42",
+        },
+    },
+};
+
 const Swatch = styled.button`
-    height: 32px;
-    padding: 4px 6px;
-    background: #fff;
-    border-radius: 8px;
-    border: 0;
+    height: 34px;
+    padding: 4px 8px;
+    background: #2a2b30;
+    border-radius: 10px;
+    border: 1px solid #3a3b42;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
+    justify-content: flex-start;
+    gap: 6px;
     cursor: pointer;
-    color: #111;
+    color: #e8e8ea;
     font-size: 12px;
     line-height: 1;
+    width: 100%;
 `;
 
 const PopOver = styled.div`
@@ -128,7 +170,7 @@ function usePreviewScale(width: number, height: number, zoom: Zoom) {
 
         const measure = () => {
             const availableWidth = Math.max(1, frame.clientWidth);
-            const availableHeight = Math.max(280, window.innerHeight - 220);
+            const availableHeight = Math.max(320, window.innerHeight - 120);
             const fit = Math.min(availableWidth / width, availableHeight / height);
             const next = zoom === "fit" ? Math.min(1, fit) : zoom === "50" ? 0.5 : 1;
             setScale(next);
@@ -329,135 +371,163 @@ function App() {
     const shadow = textShadowCss(banner);
 
     return (
-        <>
-            <Tag
-                bordered={false}
-                style={{
-                    position: "fixed",
-                    top: "16px",
-                    right: "16px",
-                    color: "#FFFFFF",
-                    zIndex: 1000,
-                }}
-            >
-                <MailOutlined style={{ marginRight: "4px" }} />
-                <a href="mailto:vuenos@gmail.com" style={{ color: "#FFFFFF" }}>
-                    Contact
-                </a>
-            </Tag>
-            <Row justify="center" className="page-heading">
-                <Col span={24}>
-                    <Title level={1}>
-                        <img src={logoImg} alt="Banner Maker" width={32} />
-                        Thumbnail Maker
-                    </Title>
-                    <Title level={2} style={{ margin: 0, color: "#ffffff" }}>
-                        글자를 넣어 썸네일과 배너를 만듭니다
-                    </Title>
-                </Col>
-            </Row>
-
-            <Row justify="center" gutter={[12, 12]} className="editor-row">
-                <Col xs={24} lg={8}>
-                    <div className="controls">
-                        <section className="control-group">
-                            <div className="control-label">저장 크기</div>
-                            <div className="split-row">
-                                <NumberField
-                                    addonBefore="가로"
-                                    value={banner.width}
-                                    min={64}
-                                    max={4096}
-                                    onCommit={(width) => commit({ width })}
+        <ConfigProvider theme={STUDIO_THEME}>
+            <div className="studio">
+                <header className="studio-topbar">
+                    <div className="studio-brand">
+                        <img src={logoImg} alt="" width={28} height={28} />
+                        <div className="studio-brand-copy">
+                            <strong>Thumbnail Maker</strong>
+                            <span>배너 · 썸네일 제작</span>
+                        </div>
+                    </div>
+                    <div className="studio-topbar-actions">
+                        <Tooltip title="실행 취소">
+                            <span>
+                                <Button
+                                    size="middle"
+                                    icon={<UndoOutlined />}
+                                    aria-label="실행 취소"
+                                    disabled={!canUndo}
+                                    onClick={undo}
                                 />
-                                <NumberField
-                                    addonBefore="세로"
-                                    value={banner.height}
-                                    min={64}
-                                    max={4096}
-                                    onCommit={(height) => commit({ height })}
+                            </span>
+                        </Tooltip>
+                        <Tooltip title="다시 실행">
+                            <span>
+                                <Button
+                                    size="middle"
+                                    icon={<RedoOutlined />}
+                                    aria-label="다시 실행"
+                                    disabled={!canRedo}
+                                    onClick={redo}
                                 />
-                            </div>
-                            <div className="preset-grid">
-                                {PRESETS.map((preset) => (
-                                    <Button
-                                        key={preset.id}
-                                        size="small"
-                                        type={
-                                            banner.width === preset.width &&
-                                            banner.height === preset.height
-                                                ? "primary"
-                                                : "default"
-                                        }
-                                        onClick={() =>
-                                            commit({
-                                                width: preset.width,
-                                                height: preset.height,
-                                                guide: preset.guide,
-                                                offsetX: 0,
-                                                offsetY: 0,
-                                            })
-                                        }
-                                    >
-                                        <span className="preset-name">{preset.label}</span>
-                                        <span className="preset-meta">
-                                            {preset.width}×{preset.height}
-                                        </span>
-                                    </Button>
-                                ))}
-                            </div>
-                            {banner.guide === "channel" ? (
-                                <p className="control-note">
-                                    점선 안이 모든 기기에서 보이는 영역입니다. 점선은
-                                    저장되지 않습니다.
-                                </p>
-                            ) : null}
-                        </section>
+                            </span>
+                        </Tooltip>
+                        <a className="studio-contact" href="mailto:vuenos@gmail.com">
+                            <MailOutlined />
+                            Contact
+                        </a>
+                        <Button
+                            id="download-button"
+                            type="primary"
+                            size="middle"
+                            icon={<CloudDownloadOutlined />}
+                            loading={exporting}
+                            onClick={downloadImage}
+                        >
+                            이미지 저장
+                        </Button>
+                    </div>
+                </header>
 
-                        <section className="control-group">
-                            <div className="inline-row">
-                                <div className="control-label">화면 배율</div>
-                                <div className="button-row">
-                                    {(
-                                        [
-                                            ["fit", "맞추기"],
-                                            ["50", "50%"],
-                                            ["100", "100%"],
-                                        ] as const
-                                    ).map(([id, label]) => (
-                                        <Button
-                                            key={id}
-                                            type={zoom === id ? "primary" : "default"}
-                                            size="small"
-                                            onClick={() => setZoom(id)}
-                                        >
-                                            {label}
-                                        </Button>
-                                    ))}
-                                    <Button
-                                        size="small"
-                                        icon={<UndoOutlined />}
-                                        aria-label="실행 취소"
-                                        disabled={!canUndo}
-                                        onClick={undo}
+                <div className="studio-body">
+                    <aside className="studio-panel">
+                        <div className="controls">
+                            <section className="control-group">
+                                <div className="control-label">저장 크기</div>
+                                <div className="split-row size-row">
+                                    <NumberField
+                                        addonBefore="가로"
+                                        value={banner.width}
+                                        min={64}
+                                        max={4096}
+                                        onCommit={(width) => commit({ width })}
                                     />
-                                    <Button
-                                        size="small"
-                                        icon={<RedoOutlined />}
-                                        aria-label="다시 실행"
-                                        disabled={!canRedo}
-                                        onClick={redo}
+                                    <NumberField
+                                        addonBefore="세로"
+                                        value={banner.height}
+                                        min={64}
+                                        max={4096}
+                                        onCommit={(height) => commit({ height })}
                                     />
                                 </div>
-                            </div>
-                        </section>
+                                <div className="preset-grid">
+                                    {PRESETS.map((preset) => {
+                                        const active =
+                                            banner.width === preset.width &&
+                                            banner.height === preset.height;
+                                        return (
+                                            <Tooltip
+                                                key={preset.id}
+                                                title={preset.tooltip}
+                                                placement="right"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className={`preset-card${active ? " is-active" : ""}`}
+                                                    onClick={() =>
+                                                        commit({
+                                                            width: preset.width,
+                                                            height: preset.height,
+                                                            guide: preset.guide,
+                                                            offsetX: 0,
+                                                            offsetY: 0,
+                                                        })
+                                                    }
+                                                >
+                                                    <div className="preset-card-stage">
+                                                        <div
+                                                            className={`preset-card-thumb preset-thumb-${preset.id.replace(":", "-")}`}
+                                                            style={{
+                                                                aspectRatio: `${preset.width} / ${preset.height}`,
+                                                            }}
+                                                        >
+                                                            <span className="preset-card-icon">
+                                                                {PRESET_ICONS[preset.id]}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="preset-card-meta">
+                                                        <span className="preset-name">
+                                                            {preset.label}
+                                                        </span>
+                                                        <span className="preset-meta">
+                                                            {preset.width}×{preset.height}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            </Tooltip>
+                                        );
+                                    })}
+                                </div>
+                                {banner.guide === "channel" ? (
+                                    <p className="control-note">
+                                        점선 안이 모든 기기에서 보이는 영역입니다.
+                                        점선은 저장되지 않습니다.
+                                    </p>
+                                ) : null}
+                            </section>
 
-                        <section className="control-group">
-                            <div className="control-label">글자</div>
-                            <div className="split-row font-row">
+                            <section className="control-group">
+                                <div className="control-label">화면 배율</div>
+                                <div className="button-row zoom-row">
+                                    {(
+                                        [
+                                            ["fit", "맞추기", "미리보기만 화면에 맞춤"],
+                                            ["50", "50%", "미리보기를 절반 크기로"],
+                                            ["100", "100%", "저장 픽셀과 같은 크기"],
+                                        ] as const
+                                    ).map(([id, label, tip]) => (
+                                        <Tooltip key={id} title={tip}>
+                                            <Button
+                                                type={zoom === id ? "primary" : "default"}
+                                                size="small"
+                                                onClick={() => setZoom(id)}
+                                            >
+                                                {label}
+                                            </Button>
+                                        </Tooltip>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <section className="control-group">
+                                <div className="control-label">글자</div>
                                 <Select
                                     size="middle"
                                     value={banner.fontFamily}
+                                    style={{ width: "100%" }}
                                     onChange={(value: string) =>
                                         commit({ fontFamily: value })
                                     }
@@ -473,256 +543,314 @@ function App() {
                                     max={400}
                                     onCommit={(fontSize) => commit({ fontSize })}
                                 />
-                            </div>
-                            <div className="split-row align-row">
-                                <div className="button-row">
+                                <div className="button-row align-tools">
                                     {(
                                         [
-                                            ["left", "왼쪽", <AlignLeftOutlined key="left" />],
+                                            [
+                                                "left",
+                                                "왼쪽 정렬",
+                                                <AlignLeftOutlined key="left" />,
+                                            ],
                                             [
                                                 "center",
-                                                "가운데",
+                                                "가운데 정렬",
                                                 <AlignCenterOutlined key="center" />,
                                             ],
                                             [
                                                 "right",
-                                                "오른쪽",
+                                                "오른쪽 정렬",
                                                 <AlignRightOutlined key="right" />,
                                             ],
                                         ] as const
                                     ).map(([align, label, icon]) => (
-                                        <Button
-                                            key={align}
-                                            size="small"
-                                            type={
-                                                banner.align === align ? "primary" : "default"
-                                            }
-                                            aria-label={label}
-                                            icon={icon}
-                                            onClick={() => commit({ align: align as Align })}
-                                        />
+                                        <Tooltip key={align} title={label}>
+                                            <Button
+                                                size="small"
+                                                type={
+                                                    banner.align === align
+                                                        ? "primary"
+                                                        : "default"
+                                                }
+                                                aria-label={label}
+                                                icon={icon}
+                                                onClick={() =>
+                                                    commit({ align: align as Align })
+                                                }
+                                            />
+                                        </Tooltip>
                                     ))}
-                                    <Button
-                                        size="small"
-                                        type={banner.shadow ? "primary" : "default"}
-                                        onClick={() => commit({ shadow: !banner.shadow })}
-                                    >
-                                        그림자
-                                    </Button>
+                                    <Tooltip title="글자 아래에 그림자를 넣습니다">
+                                        <Button
+                                            size="small"
+                                            type={banner.shadow ? "primary" : "default"}
+                                            onClick={() =>
+                                                commit({ shadow: !banner.shadow })
+                                            }
+                                        >
+                                            그림자
+                                        </Button>
+                                    </Tooltip>
                                 </div>
-                                <NumberField
-                                    addonBefore="외곽선"
-                                    value={banner.strokeWidth}
-                                    min={0}
-                                    max={32}
-                                    onCommit={(strokeWidth) => commit({ strokeWidth })}
-                                />
-                            </div>
-                            <div className="swatch-row">
-                                <Swatch
-                                    type="button"
-                                    aria-label="글자색"
-                                    onClick={(event) =>
-                                        openPicker("font", event.currentTarget)
-                                    }
-                                >
-                                    <span
-                                        className="colorChip"
-                                        style={{ backgroundColor: banner.fontColor }}
-                                    />
-                                    글자색
-                                </Swatch>
-                                <Swatch
-                                    type="button"
-                                    aria-label="외곽선 색"
+                                <Tooltip
                                     title={
                                         banner.strokeWidth === 0
-                                            ? "외곽선 굵기를 올리면 글자 테두리에 보입니다"
-                                            : "외곽선 색"
-                                    }
-                                    onClick={(event) =>
-                                        openPicker("stroke", event.currentTarget)
+                                            ? "굵기를 올리면 글자 테두리에 색이 보입니다"
+                                            : "글자 테두리 굵기"
                                     }
                                 >
-                                    <span
-                                        className="colorChip"
-                                        style={{ backgroundColor: banner.strokeColor }}
-                                    />
-                                    외곽선
-                                </Swatch>
-                                <Swatch
-                                    type="button"
-                                    aria-label="배경색"
-                                    onClick={(event) =>
-                                        openPicker("bg", event.currentTarget)
-                                    }
-                                >
-                                    <span
-                                        className="colorChip"
-                                        style={{ backgroundColor: banner.backgroundColor }}
-                                    />
-                                    배경색
-                                </Swatch>
-                                <Button
-                                    size="small"
-                                    aria-label="배경 사진"
-                                    icon={<PictureOutlined />}
-                                    onClick={() => imageRef.current?.click()}
-                                >
-                                    사진
-                                </Button>
-                                {banner.imageUrl ? (
-                                    <Button
-                                        size="small"
-                                        aria-label="배경 사진 삭제"
-                                        icon={<DeleteOutlined />}
-                                        onClick={() => commit({ imageUrl: "" })}
-                                    >
-                                        삭제
-                                    </Button>
-                                ) : null}
-                                <input
-                                    ref={imageRef}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={imageUploadHandler}
-                                    style={{ display: "none" }}
-                                />
-                            </div>
-                            {picker
-                                ? createPortal(
-                                      <>
-                                          <Cover onClick={closePicker} />
-                                          <PopOver
-                                              style={{
-                                                  top: pickerPosition.top,
-                                                  left: pickerPosition.left,
-                                              }}
-                                          >
-                                              <SketchPicker
-                                                  color={pickerColor}
-                                                  onChange={onPickerChange}
-                                              />
-                                          </PopOver>
-                                      </>,
-                                      document.getElementById("root") ?? document.body,
-                                  )
-                                : null}
-                        </section>
-
-                        <div className="action-row">
-                            <Button
-                                id="download-button"
-                                type="primary"
-                                size="middle"
-                                icon={<CloudDownloadOutlined />}
-                                loading={exporting}
-                                onClick={downloadImage}
-                            >
-                                다운로드
-                            </Button>
-                            <Button
-                                type="default"
-                                size="middle"
-                                icon={<BgColorsOutlined />}
-                                onClick={() => commit({ backgroundColor: randomHex() })}
-                            >
-                                배경 랜덤
-                            </Button>
-                            <Button
-                                type="default"
-                                size="middle"
-                                icon={<MessageOutlined />}
-                                onClick={() => commit({ text: randomPhrase() })}
-                            >
-                                문구 랜덤
-                            </Button>
-                        </div>
-                    </div>
-                </Col>
-
-                <Col xs={24} lg={16}>
-                    <div ref={frameRef} className="preview-frame">
-                        <div
-                            className="preview-slot"
-                            style={{ width: displayWidth, height: displayHeight }}
-                        >
-                            <div
-                                id="canvasContainer"
-                                ref={canvasRef}
-                                style={{
-                                    width: banner.width,
-                                    height: banner.height,
-                                    transform: `scale(${scale})`,
-                                    transformOrigin: "top left",
-                                    backgroundColor: banner.backgroundColor,
-                                    backgroundImage: banner.imageUrl
-                                        ? `url(${banner.imageUrl})`
-                                        : "none",
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center",
-                                    fontFamily: `"${banner.fontFamily}", sans-serif`,
-                                }}
-                            >
-                                {banner.guide === "channel" ? (
-                                    <div
-                                        data-html2canvas-ignore="true"
-                                        className="safe-area"
-                                        style={{
-                                            width: CHANNEL_SAFE.width,
-                                            height: CHANNEL_SAFE.height,
-                                        }}
-                                    />
-                                ) : null}
-                                <div
-                                    className="text-block"
-                                    style={{
-                                        transform: `translate(calc(-50% + ${banner.offsetX}px), calc(-50% + ${banner.offsetY}px))`,
-                                    }}
-                                >
-                                    <div
-                                        id="editor"
-                                        ref={editorRef}
-                                        contentEditable
-                                        spellCheck={false}
-                                        role="textbox"
-                                        aria-label="배너 글자"
-                                        onFocus={() => live({ text: banner.text })}
-                                        onInput={(event) =>
-                                            live({
-                                                text: readEditorText(event.currentTarget),
-                                            })
+                                    <div>
+                                        <NumberField
+                                            addonBefore="외곽선"
+                                            value={banner.strokeWidth}
+                                            min={0}
+                                            max={32}
+                                            onCommit={(strokeWidth) =>
+                                                commit({ strokeWidth })
+                                            }
+                                        />
+                                    </div>
+                                </Tooltip>
+                                <div className="swatch-row">
+                                    <Tooltip title="글자 색">
+                                        <Swatch
+                                            type="button"
+                                            aria-label="글자색"
+                                            onClick={(event) =>
+                                                openPicker("font", event.currentTarget)
+                                            }
+                                        >
+                                            <span
+                                                className="colorChip"
+                                                style={{
+                                                    backgroundColor: banner.fontColor,
+                                                }}
+                                            />
+                                            글자색
+                                        </Swatch>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={
+                                            banner.strokeWidth === 0
+                                                ? "외곽선 굵기를 올리면 테두리 색이 보입니다"
+                                                : "외곽선 색"
                                         }
-                                        onBlur={endGesture}
-                                        style={{
-                                            textAlign: banner.align,
-                                            color: banner.fontColor,
-                                            fontSize: banner.fontSize,
-                                            fontFamily: `"${banner.fontFamily}", sans-serif`,
-                                            textShadow: shadow || "none",
-                                        }}
+                                    >
+                                        <Swatch
+                                            type="button"
+                                            aria-label="외곽선 색"
+                                            onClick={(event) =>
+                                                openPicker(
+                                                    "stroke",
+                                                    event.currentTarget,
+                                                )
+                                            }
+                                        >
+                                            <span
+                                                className="colorChip"
+                                                style={{
+                                                    backgroundColor: banner.strokeColor,
+                                                }}
+                                            />
+                                            외곽선
+                                        </Swatch>
+                                    </Tooltip>
+                                    <Tooltip title="배너 배경 색">
+                                        <Swatch
+                                            type="button"
+                                            aria-label="배경색"
+                                            onClick={(event) =>
+                                                openPicker("bg", event.currentTarget)
+                                            }
+                                        >
+                                            <span
+                                                className="colorChip"
+                                                style={{
+                                                    backgroundColor:
+                                                        banner.backgroundColor,
+                                                }}
+                                            />
+                                            배경색
+                                        </Swatch>
+                                    </Tooltip>
+                                    <Tooltip title="배경에 사진을 넣습니다">
+                                        <Button
+                                            size="small"
+                                            aria-label="배경 사진"
+                                            icon={<PictureOutlined />}
+                                            onClick={() => imageRef.current?.click()}
+                                        >
+                                            사진
+                                        </Button>
+                                    </Tooltip>
+                                    {banner.imageUrl ? (
+                                        <Tooltip title="배경 사진을 지웁니다">
+                                            <Button
+                                                size="small"
+                                                aria-label="배경 사진 삭제"
+                                                icon={<DeleteOutlined />}
+                                                onClick={() =>
+                                                    commit({ imageUrl: "" })
+                                                }
+                                            >
+                                                삭제
+                                            </Button>
+                                        </Tooltip>
+                                    ) : null}
+                                    <input
+                                        ref={imageRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={imageUploadHandler}
+                                        style={{ display: "none" }}
                                     />
                                 </div>
+                                {picker
+                                    ? createPortal(
+                                          <>
+                                              <Cover onClick={closePicker} />
+                                              <PopOver
+                                                  style={{
+                                                      top: pickerPosition.top,
+                                                      left: pickerPosition.left,
+                                                  }}
+                                              >
+                                                  <SketchPicker
+                                                      color={pickerColor}
+                                                      onChange={onPickerChange}
+                                                  />
+                                              </PopOver>
+                                          </>,
+                                          document.getElementById("root") ??
+                                              document.body,
+                                      )
+                                    : null}
+                            </section>
+
+                            <div className="action-row">
+                                <Tooltip title="배경 색을 무작위로 바꿉니다">
+                                    <span className="tooltip-block">
+                                        <Button
+                                            type="default"
+                                            size="middle"
+                                            block
+                                            icon={<BgColorsOutlined />}
+                                            onClick={() =>
+                                                commit({
+                                                    backgroundColor: randomHex(),
+                                                })
+                                            }
+                                        >
+                                            배경색 바꾸기
+                                        </Button>
+                                    </span>
+                                </Tooltip>
+                                <Tooltip title="예문 문구를 무작위로 넣습니다">
+                                    <span className="tooltip-block">
+                                        <Button
+                                            type="default"
+                                            size="middle"
+                                            block
+                                            icon={<MessageOutlined />}
+                                            onClick={() =>
+                                                commit({ text: randomPhrase() })
+                                            }
+                                        >
+                                            문구 바꾸기
+                                        </Button>
+                                    </span>
+                                </Tooltip>
                             </div>
-                            <Button
-                                className="text-grip"
-                                size="small"
-                                icon={<DragOutlined />}
-                                aria-label="글자 이동"
-                                onPointerDown={onGripDown}
-                            >
-                                이동
-                            </Button>
                         </div>
-                    </div>
-                    <Text type="secondary" className="edit-hint">
-                        글자를 클릭해 고치고, 이동 버튼으로 자리를 옮기세요.
-                    </Text>
-                </Col>
-            </Row>
+                    </aside>
+
+                    <main className="studio-stage">
+                        <div ref={frameRef} className="preview-frame">
+                            <div
+                                className="preview-slot"
+                                style={{
+                                    width: displayWidth,
+                                    height: displayHeight,
+                                }}
+                            >
+                                <div
+                                    id="canvasContainer"
+                                    ref={canvasRef}
+                                    style={{
+                                        width: banner.width,
+                                        height: banner.height,
+                                        transform: `scale(${scale})`,
+                                        transformOrigin: "top left",
+                                        backgroundColor: banner.backgroundColor,
+                                        backgroundImage: banner.imageUrl
+                                            ? `url(${banner.imageUrl})`
+                                            : "none",
+                                        backgroundRepeat: "no-repeat",
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                        fontFamily: `"${banner.fontFamily}", sans-serif`,
+                                    }}
+                                >
+                                    {banner.guide === "channel" ? (
+                                        <div
+                                            data-html2canvas-ignore="true"
+                                            className="safe-area"
+                                            style={{
+                                                width: CHANNEL_SAFE.width,
+                                                height: CHANNEL_SAFE.height,
+                                            }}
+                                        />
+                                    ) : null}
+                                    <div
+                                        className="text-block"
+                                        style={{
+                                            transform: `translate(calc(-50% + ${banner.offsetX}px), calc(-50% + ${banner.offsetY}px))`,
+                                        }}
+                                    >
+                                        <div
+                                            id="editor"
+                                            ref={editorRef}
+                                            contentEditable
+                                            spellCheck={false}
+                                            role="textbox"
+                                            aria-label="배너 글자"
+                                            onFocus={() => live({ text: banner.text })}
+                                            onInput={(event) =>
+                                                live({
+                                                    text: readEditorText(
+                                                        event.currentTarget,
+                                                    ),
+                                                })
+                                            }
+                                            onBlur={endGesture}
+                                            style={{
+                                                textAlign: banner.align,
+                                                color: banner.fontColor,
+                                                fontSize: banner.fontSize,
+                                                fontFamily: `"${banner.fontFamily}", sans-serif`,
+                                                textShadow: shadow || "none",
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                <Button
+                                    className="text-grip"
+                                    size="small"
+                                    icon={<DragOutlined />}
+                                    aria-label="글자 이동"
+                                    onPointerDown={onGripDown}
+                                >
+                                    이동
+                                </Button>
+                            </div>
+                        </div>
+                        <p className="edit-hint">
+                            글자를 클릭해 고치고, 이동 버튼으로 자리를 옮기세요.
+                        </p>
+                    </main>
+                </div>
+            </div>
             <Analytics />
-        </>
+        </ConfigProvider>
     );
 }
 
