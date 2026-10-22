@@ -3,7 +3,7 @@
 ## You can create Youtube and Tiktok Thumbnail for free
 (유튜브 썸네일, 배너 무료 제작)
 
-https://banner-maker-vuenos-projects.vercel.app
+https://www.thumbnail.co.kr/
 
 ### 개선 내용
 
@@ -21,3 +21,9 @@ https://banner-maker-vuenos-projects.vercel.app
 - 프리셋은 비율 미리보기가 있는 2×2 비주얼 카드입니다. 마우스를 올리면 용도 설명이 나옵니다.
 - 이미지 저장은 상단 코랄 CTA에 두고, 배너 영역이 화면 대부분을 차지하도록 맞췄습니다.
 - 좁은 화면에서는 조작 패널이 위로, 미리보기가 아래로 쌓입니다.
+
+### SEO
+
+- 한국어 중심 title·description, Open Graph, Twitter Card, JSON-LD(WebApplication)를 넣었습니다.
+- `sitemap.xml`과 `robots.txt` Sitemap 지시어를 제공합니다.
+- 정규 URL은 `https://www.thumbnail.co.kr/` 입니다.

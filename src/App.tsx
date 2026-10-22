@@ -377,8 +377,8 @@ function App() {
                     <div className="studio-brand">
                         <img src={logoImg} alt="" width={28} height={28} />
                         <div className="studio-brand-copy">
-                            <strong>Thumbnail Maker</strong>
-                            <span>배너 · 썸네일 제작</span>
+                            <h1>Thumbnail Maker</h1>
+                            <p>유튜브 썸네일 · 배너 무료 제작</p>
                         </div>
                     </div>
                     <div className="studio-topbar-actions">

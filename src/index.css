@@ -87,14 +87,18 @@ body {
   min-width: 0;
 }
 
-.studio-brand-copy strong {
+.studio-brand-copy h1 {
+  margin: 0;
   font-family: 'Lobster', Georgia, serif;
   font-size: 20px;
   font-weight: 400;
   letter-spacing: 0.2px;
+  color: var(--studio-text);
+  line-height: 1.15;
 }
 
-.studio-brand-copy span {
+.studio-brand-copy p {
+  margin: 0;
   color: var(--studio-muted);
   font-size: 11px;
 }
@@ -488,7 +492,7 @@ body {
     padding: 10px 12px;
   }
 
-  .studio-brand-copy span {
+  .studio-brand-copy p {
     display: none;
   }
 
