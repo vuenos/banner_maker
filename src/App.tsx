@@ -4,6 +4,7 @@ import {
     ReactNode,
     useCallback,
     useEffect,
+    useLayoutEffect,
     useRef,
     useState,
 } from "react";
@@ -15,6 +16,7 @@ import {
     Button,
     ConfigProvider,
     Input,
+    Modal,
     Select,
     Tooltip,
     theme,
@@ -25,6 +27,7 @@ import {
     AlignLeftOutlined,
     AlignRightOutlined,
     BgColorsOutlined,
+    ClearOutlined,
     CloudDownloadOutlined,
     DeleteOutlined,
     DesktopOutlined,
@@ -34,6 +37,7 @@ import {
     MessageOutlined,
     MobileOutlined,
     PictureOutlined,
+    PlusOutlined,
     RedoOutlined,
     UndoOutlined,
     YoutubeOutlined,
@@ -45,11 +49,17 @@ import {
     Align,
     CHANNEL_SAFE,
     FONTS,
+    MAX_TEXTS,
     PRESETS,
-    fontHref,
+    TEXT_STYLES,
+    TextStyleId,
+    applyTextStyle,
+    fontsHref,
+    isGradientTextStyle,
+    layerStrokeStyle,
+    layerVisualStyle,
     randomHex,
     randomPhrase,
-    textShadowCss,
 } from "./bannerModel";
 import { useBannerState } from "./useBannerState";
 
@@ -190,19 +200,71 @@ function usePreviewScale(width: number, height: number, zoom: Zoom) {
 }
 
 function App() {
-    const { banner, commit, live, endGesture, undo, redo, canUndo, canRedo } =
-        useBannerState();
+    const {
+        banner,
+        selected,
+        commit,
+        commitText,
+        live,
+        liveText,
+        endGesture,
+        undo,
+        redo,
+        reset,
+        addText,
+        removeText,
+        selectText,
+        canUndo,
+        canRedo,
+    } = useBannerState();
     const [picker, setPicker] = useState<Picker>(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const pickerAnchorRef = useRef<HTMLElement | null>(null);
     const [zoom, setZoom] = useState<Zoom>("fit");
     const [exporting, setExporting] = useState(false);
     const canvasRef = useRef<HTMLDivElement>(null);
-    const editorRef = useRef<HTMLDivElement>(null);
+    const slotRef = useRef<HTMLDivElement>(null);
+    const editorRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const blockRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const imageRef = useRef<HTMLInputElement>(null);
     const scaleRef = useRef(1);
     const { frameRef, scale } = usePreviewScale(banner.width, banner.height, zoom);
     scaleRef.current = scale;
+    const [gripPos, setGripPos] = useState({ top: 8, left: 8, ready: false });
+
+    useLayoutEffect(() => {
+        const slot = slotRef.current;
+        const block = blockRefs.current[selected.id];
+        if (!slot || !block) {
+            setGripPos((prev) => ({ ...prev, ready: false }));
+            return;
+        }
+        const place = () => {
+            const slotBox = slot.getBoundingClientRect();
+            const blockBox = block.getBoundingClientRect();
+            setGripPos({
+                top: blockBox.top - slotBox.top - 36,
+                left: blockBox.left - slotBox.left,
+                ready: true,
+            });
+        };
+        place();
+        const observer = new ResizeObserver(place);
+        observer.observe(block);
+        observer.observe(slot);
+        return () => observer.disconnect();
+    }, [
+        selected.id,
+        selected.offsetX,
+        selected.offsetY,
+        selected.text,
+        selected.fontSize,
+        selected.fontFamily,
+        selected.align,
+        scale,
+        banner.width,
+        banner.height,
+    ]);
 
     useEffect(() => {
         const id = "banner-font";
@@ -213,16 +275,18 @@ function App() {
             link.rel = "stylesheet";
             document.head.appendChild(link);
         }
-        link.href = fontHref(banner.fontFamily);
-    }, [banner.fontFamily]);
+        link.href = fontsHref(banner.texts.map((layer) => layer.fontFamily));
+    }, [banner.texts]);
 
     useEffect(() => {
-        const editor = editorRef.current;
-        if (!editor || document.activeElement === editor) return;
-        if (readEditorText(editor) !== banner.text) {
-            editor.innerText = banner.text;
+        for (const layer of banner.texts) {
+            const editor = editorRefs.current[layer.id];
+            if (!editor || document.activeElement === editor) continue;
+            if (readEditorText(editor) !== layer.text) {
+                editor.innerText = layer.text;
+            }
         }
-    }, [banner.text]);
+    }, [banner.texts]);
 
     useEffect(() => {
         const onKey = (event: KeyboardEvent) => {
@@ -285,14 +349,14 @@ function App() {
 
     const pickerColor =
         picker === "font"
-            ? banner.fontColor
+            ? selected.fontColor
             : picker === "stroke"
-              ? banner.strokeColor
+              ? selected.strokeColor
               : banner.backgroundColor;
 
     const onPickerChange = (color: { hex: string }) => {
-        if (picker === "font") live({ fontColor: color.hex });
-        else if (picker === "stroke") live({ strokeColor: color.hex });
+        if (picker === "font") liveText({ fontColor: color.hex });
+        else if (picker === "stroke") liveText({ strokeColor: color.hex });
         else live({ backgroundColor: color.hex });
     };
 
@@ -301,14 +365,14 @@ function App() {
         event.stopPropagation();
         const startX = event.clientX;
         const startY = event.clientY;
-        const baseX = banner.offsetX;
-        const baseY = banner.offsetY;
-        live({ offsetX: baseX, offsetY: baseY });
+        const baseX = selected.offsetX;
+        const baseY = selected.offsetY;
+        liveText({ offsetX: baseX, offsetY: baseY });
 
         const move = (pointer: PointerEvent) => {
             const dx = (pointer.clientX - startX) / scaleRef.current;
             const dy = (pointer.clientY - startY) / scaleRef.current;
-            live({ offsetX: baseX + dx, offsetY: baseY + dy });
+            liveText({ offsetX: baseX + dx, offsetY: baseY + dy });
         };
         const up = () => {
             endGesture();
@@ -325,8 +389,12 @@ function App() {
         setExporting(true);
         track("download", { width: banner.width, height: banner.height });
         try {
-            await document.fonts.load(
-                `${banner.fontSize}px "${banner.fontFamily}"`,
+            await Promise.all(
+                banner.texts.map((layer) =>
+                    document.fonts.load(
+                        `${layer.fontSize}px "${layer.fontFamily}"`,
+                    ),
+                ),
             );
             await document.fonts.ready;
             const shot = await html2canvas(node, {
@@ -368,7 +436,6 @@ function App() {
 
     const displayWidth = banner.width * scale;
     const displayHeight = banner.height * scale;
-    const shadow = textShadowCss(banner);
 
     return (
         <ConfigProvider theme={STUDIO_THEME}>
@@ -403,6 +470,30 @@ function App() {
                                     onClick={redo}
                                 />
                             </span>
+                        </Tooltip>
+                        <Tooltip title="처음 상태로 되돌리기">
+                            <Button
+                                size="middle"
+                                icon={<ClearOutlined />}
+                                aria-label="초기화"
+                                onClick={() => {
+                                    Modal.confirm({
+                                        title: "초기화할까요?",
+                                        content:
+                                            "크기·글자·배경·히스토리가 처음 상태로 돌아갑니다.",
+                                        okText: "초기화",
+                                        cancelText: "취소",
+                                        okButtonProps: { danger: true },
+                                        onOk: () => {
+                                            reset();
+                                            setZoom("fit");
+                                            setPicker(null);
+                                        },
+                                    });
+                                }}
+                            >
+                                초기화
+                            </Button>
                         </Tooltip>
                         <a className="studio-contact" href="mailto:vuenos@gmail.com">
                             <MailOutlined />
@@ -461,8 +552,13 @@ function App() {
                                                             width: preset.width,
                                                             height: preset.height,
                                                             guide: preset.guide,
-                                                            offsetX: 0,
-                                                            offsetY: 0,
+                                                            texts: banner.texts.map(
+                                                                (layer) => ({
+                                                                    ...layer,
+                                                                    offsetX: 0,
+                                                                    offsetY: 0,
+                                                                }),
+                                                            ),
                                                         })
                                                     }
                                                 >
@@ -523,13 +619,83 @@ function App() {
                             </section>
 
                             <section className="control-group">
-                                <div className="control-label">글자</div>
+                                <div className="control-label-row">
+                                    <div className="control-label">글자</div>
+                                    <div className="button-row layer-actions">
+                                        <Tooltip title="글자를 하나 더 넣습니다">
+                                            <Button
+                                                size="small"
+                                                icon={<PlusOutlined />}
+                                                disabled={banner.texts.length >= MAX_TEXTS}
+                                                onClick={addText}
+                                            >
+                                                추가
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip title="선택한 글자를 지웁니다">
+                                            <Button
+                                                size="small"
+                                                icon={<DeleteOutlined />}
+                                                disabled={banner.texts.length <= 1}
+                                                onClick={() => removeText()}
+                                            />
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                                <div className="layer-list">
+                                    {banner.texts.map((layer, index) => (
+                                        <button
+                                            key={layer.id}
+                                            type="button"
+                                            className={`layer-chip${layer.id === selected.id ? " is-active" : ""}`}
+                                            onClick={() => selectText(layer.id)}
+                                        >
+                                            <span>{index + 1}</span>
+                                            <em>
+                                                {layer.text.replace(/\s+/g, " ").trim() ||
+                                                    "빈 글자"}
+                                            </em>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="control-label">스타일</div>
+                                <div className="style-grid">
+                                    {TEXT_STYLES.map((style) => (
+                                        <Tooltip
+                                            key={style.id}
+                                            title={style.tooltip}
+                                        >
+                                            <button
+                                                type="button"
+                                                className={`style-card${selected.styleId === style.id ? " is-active" : ""}`}
+                                                onClick={() =>
+                                                    commitText(
+                                                        applyTextStyle(
+                                                            selected,
+                                                            style.id as TextStyleId,
+                                                        ),
+                                                    )
+                                                }
+                                            >
+                                                <span
+                                                    className="style-swatch"
+                                                    style={{ background: style.swatch }}
+                                                >
+                                                    Aa
+                                                </span>
+                                                <span className="style-name">
+                                                    {style.label}
+                                                </span>
+                                            </button>
+                                        </Tooltip>
+                                    ))}
+                                </div>
                                 <Select
                                     size="middle"
-                                    value={banner.fontFamily}
+                                    value={selected.fontFamily}
                                     style={{ width: "100%" }}
                                     onChange={(value: string) =>
-                                        commit({ fontFamily: value })
+                                        commitText({ fontFamily: value })
                                     }
                                     options={FONTS.map((font) => ({
                                         value: font.value,
@@ -538,10 +704,10 @@ function App() {
                                 />
                                 <NumberField
                                     addonBefore="크기"
-                                    value={banner.fontSize}
+                                    value={selected.fontSize}
                                     min={8}
                                     max={400}
-                                    onCommit={(fontSize) => commit({ fontSize })}
+                                    onCommit={(fontSize) => commitText({ fontSize })}
                                 />
                                 <div className="button-row align-tools">
                                     {(
@@ -567,14 +733,16 @@ function App() {
                                             <Button
                                                 size="small"
                                                 type={
-                                                    banner.align === align
+                                                    selected.align === align
                                                         ? "primary"
                                                         : "default"
                                                 }
                                                 aria-label={label}
                                                 icon={icon}
                                                 onClick={() =>
-                                                    commit({ align: align as Align })
+                                                    commitText({
+                                                        align: align as Align,
+                                                    })
                                                 }
                                             />
                                         </Tooltip>
@@ -582,9 +750,13 @@ function App() {
                                     <Tooltip title="글자 아래에 그림자를 넣습니다">
                                         <Button
                                             size="small"
-                                            type={banner.shadow ? "primary" : "default"}
+                                            type={
+                                                selected.shadow ? "primary" : "default"
+                                            }
                                             onClick={() =>
-                                                commit({ shadow: !banner.shadow })
+                                                commitText({
+                                                    shadow: !selected.shadow,
+                                                })
                                             }
                                         >
                                             그림자
@@ -593,7 +765,7 @@ function App() {
                                 </div>
                                 <Tooltip
                                     title={
-                                        banner.strokeWidth === 0
+                                        selected.strokeWidth === 0
                                             ? "굵기를 올리면 글자 테두리에 색이 보입니다"
                                             : "글자 테두리 굵기"
                                     }
@@ -601,17 +773,17 @@ function App() {
                                     <div>
                                         <NumberField
                                             addonBefore="외곽선"
-                                            value={banner.strokeWidth}
+                                            value={selected.strokeWidth}
                                             min={0}
                                             max={32}
                                             onCommit={(strokeWidth) =>
-                                                commit({ strokeWidth })
+                                                commitText({ strokeWidth })
                                             }
                                         />
                                     </div>
                                 </Tooltip>
                                 <div className="swatch-row">
-                                    <Tooltip title="글자 색">
+                                    <Tooltip title="글자 색 · 그라데이션 스타일에서는 보조색">
                                         <Swatch
                                             type="button"
                                             aria-label="글자색"
@@ -622,7 +794,7 @@ function App() {
                                             <span
                                                 className="colorChip"
                                                 style={{
-                                                    backgroundColor: banner.fontColor,
+                                                    backgroundColor: selected.fontColor,
                                                 }}
                                             />
                                             글자색
@@ -630,7 +802,7 @@ function App() {
                                     </Tooltip>
                                     <Tooltip
                                         title={
-                                            banner.strokeWidth === 0
+                                            selected.strokeWidth === 0
                                                 ? "외곽선 굵기를 올리면 테두리 색이 보입니다"
                                                 : "외곽선 색"
                                         }
@@ -648,7 +820,8 @@ function App() {
                                             <span
                                                 className="colorChip"
                                                 style={{
-                                                    backgroundColor: banner.strokeColor,
+                                                    backgroundColor:
+                                                        selected.strokeColor,
                                                 }}
                                             />
                                             외곽선
@@ -744,7 +917,7 @@ function App() {
                                         </Button>
                                     </span>
                                 </Tooltip>
-                                <Tooltip title="예문 문구를 무작위로 넣습니다">
+                                <Tooltip title="선택한 글자 문구를 무작위로 바꿉니다">
                                     <span className="tooltip-block">
                                         <Button
                                             type="default"
@@ -752,7 +925,7 @@ function App() {
                                             block
                                             icon={<MessageOutlined />}
                                             onClick={() =>
-                                                commit({ text: randomPhrase() })
+                                                commitText({ text: randomPhrase() })
                                             }
                                         >
                                             문구 바꾸기
@@ -766,6 +939,7 @@ function App() {
                     <main className="studio-stage">
                         <div ref={frameRef} className="preview-frame">
                             <div
+                                ref={slotRef}
                                 className="preview-slot"
                                 style={{
                                     width: displayWidth,
@@ -787,7 +961,6 @@ function App() {
                                         backgroundRepeat: "no-repeat",
                                         backgroundSize: "cover",
                                         backgroundPosition: "center",
-                                        fontFamily: `"${banner.fontFamily}", sans-serif`,
                                     }}
                                 >
                                     {banner.guide === "channel" ? (
@@ -800,51 +973,89 @@ function App() {
                                             }}
                                         />
                                     ) : null}
-                                    <div
-                                        className="text-block"
-                                        style={{
-                                            transform: `translate(calc(-50% + ${banner.offsetX}px), calc(-50% + ${banner.offsetY}px))`,
-                                        }}
-                                    >
-                                        <div
-                                            id="editor"
-                                            ref={editorRef}
-                                            contentEditable
-                                            spellCheck={false}
-                                            role="textbox"
-                                            aria-label="배너 글자"
-                                            onFocus={() => live({ text: banner.text })}
-                                            onInput={(event) =>
-                                                live({
-                                                    text: readEditorText(
-                                                        event.currentTarget,
-                                                    ),
-                                                })
-                                            }
-                                            onBlur={endGesture}
-                                            style={{
-                                                textAlign: banner.align,
-                                                color: banner.fontColor,
-                                                fontSize: banner.fontSize,
-                                                fontFamily: `"${banner.fontFamily}", sans-serif`,
-                                                textShadow: shadow || "none",
-                                            }}
-                                        />
-                                    </div>
+                                    {banner.texts.map((layer) => {
+                                        const isSelected = layer.id === selected.id;
+                                        return (
+                                            <div
+                                                key={layer.id}
+                                                ref={(node) => {
+                                                    blockRefs.current[layer.id] = node;
+                                                }}
+                                                className={`text-block${isSelected ? " is-selected" : ""}`}
+                                                style={{
+                                                    transform: `translate(calc(-50% + ${layer.offsetX}px), calc(-50% + ${layer.offsetY}px))`,
+                                                }}
+                                                onPointerDown={() =>
+                                                    selectText(layer.id)
+                                                }
+                                            >
+                                                <div className="banner-text-stack">
+                                                    {isGradientTextStyle(
+                                                        layer.styleId,
+                                                    ) ? (
+                                                        <div
+                                                            className="banner-text banner-text-stroke"
+                                                            aria-hidden
+                                                            style={layerStrokeStyle(
+                                                                layer,
+                                                            )}
+                                                        >
+                                                            {layer.text}
+                                                        </div>
+                                                    ) : null}
+                                                    <div
+                                                        ref={(node) => {
+                                                            editorRefs.current[
+                                                                layer.id
+                                                            ] = node;
+                                                        }}
+                                                        className="banner-text"
+                                                        contentEditable
+                                                        suppressContentEditableWarning
+                                                        spellCheck={false}
+                                                        role="textbox"
+                                                        aria-label="배너 글자"
+                                                        onFocus={() =>
+                                                            selectText(layer.id)
+                                                        }
+                                                        onInput={(event) => {
+                                                            selectText(layer.id);
+                                                            liveText({
+                                                                text: readEditorText(
+                                                                    event.currentTarget,
+                                                                ),
+                                                            });
+                                                        }}
+                                                        onBlur={endGesture}
+                                                        style={layerVisualStyle(
+                                                            layer,
+                                                        )}
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <Button
-                                    className="text-grip"
-                                    size="small"
-                                    icon={<DragOutlined />}
-                                    aria-label="글자 이동"
-                                    onPointerDown={onGripDown}
-                                >
-                                    이동
-                                </Button>
+                                {gripPos.ready ? (
+                                    <Button
+                                        className="text-grip"
+                                        size="small"
+                                        icon={<DragOutlined />}
+                                        aria-label="글자 이동"
+                                        style={{
+                                            top: Math.max(4, gripPos.top),
+                                            left: Math.max(4, gripPos.left),
+                                        }}
+                                        onPointerDown={onGripDown}
+                                    >
+                                        이동
+                                    </Button>
+                                ) : null}
                             </div>
                         </div>
                         <p className="edit-hint">
-                            글자를 클릭해 고치고, 이동 버튼으로 자리를 옮기세요.
+                            글자를 추가하고, 스타일을 고른 뒤 드래그로 자리를
+                            옮기세요.
                         </p>
                     </main>
                 </div>

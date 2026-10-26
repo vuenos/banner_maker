@@ -1,25 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
     Banner,
-    DEFAULT_BANNER,
     HISTORY_LIMIT,
+    TextLayer,
+    addTextLayer,
     bannersEqual,
+    createFreshBanner,
     loadDraft,
-    randomHex,
-    randomPhrase,
+    removeTextLayer,
     sanitize,
     saveDraft,
+    selectedText,
+    withSelectedText,
 } from "./bannerModel";
 
 function createInitialBanner() {
-    return (
-        loadDraft() ??
-        sanitize({
-            ...DEFAULT_BANNER,
-            backgroundColor: randomHex(),
-            text: randomPhrase(),
-        })
-    );
+    return loadDraft() ?? createFreshBanner();
 }
 
 export function useBannerState() {
@@ -37,26 +33,51 @@ export function useBannerState() {
         });
     }, []);
 
-    const commit = useCallback(
-        (partial: Partial<Banner>) => {
+    const apply = useCallback(
+        (next: Banner, recordHistory: boolean) => {
             const current = bannerRef.current;
-            const next = sanitize({ ...current, ...partial });
-            gestureBase.current = null;
-            if (bannersEqual(current, next)) return;
-            past.current.push(current);
-            if (past.current.length > HISTORY_LIMIT) past.current.shift();
-            future.current = [];
-            bannerRef.current = next;
-            setBanner(next);
-            syncHistory();
+            const safe = sanitize(next);
+            if (bannersEqual(current, safe)) return;
+            if (recordHistory) {
+                past.current.push(current);
+                if (past.current.length > HISTORY_LIMIT) past.current.shift();
+                future.current = [];
+                syncHistory();
+            }
+            bannerRef.current = safe;
+            setBanner(safe);
         },
         [syncHistory],
+    );
+
+    const commit = useCallback(
+        (partial: Partial<Banner>) => {
+            gestureBase.current = null;
+            apply({ ...bannerRef.current, ...partial }, true);
+        },
+        [apply],
+    );
+
+    const commitText = useCallback(
+        (partial: Partial<TextLayer>) => {
+            gestureBase.current = null;
+            apply(withSelectedText(bannerRef.current, partial), true);
+        },
+        [apply],
     );
 
     const live = useCallback((partial: Partial<Banner>) => {
         const current = bannerRef.current;
         if (!gestureBase.current) gestureBase.current = current;
         const next = sanitize({ ...current, ...partial });
+        bannerRef.current = next;
+        setBanner(next);
+    }, []);
+
+    const liveText = useCallback((partial: Partial<TextLayer>) => {
+        const current = bannerRef.current;
+        if (!gestureBase.current) gestureBase.current = current;
+        const next = sanitize(withSelectedText(current, partial));
         bannerRef.current = next;
         setBanner(next);
     }, []);
@@ -91,6 +112,36 @@ export function useBannerState() {
         syncHistory();
     }, [syncHistory]);
 
+    const addText = useCallback(() => {
+        gestureBase.current = null;
+        apply(addTextLayer(bannerRef.current), true);
+    }, [apply]);
+
+    const removeText = useCallback(
+        (id?: string) => {
+            gestureBase.current = null;
+            const target = id ?? bannerRef.current.selectedId;
+            apply(removeTextLayer(bannerRef.current, target), true);
+        },
+        [apply],
+    );
+
+    const selectText = useCallback((id: string) => {
+        if (bannerRef.current.selectedId === id) return;
+        gestureBase.current = null;
+        apply({ ...bannerRef.current, selectedId: id }, false);
+    }, [apply]);
+
+    const reset = useCallback(() => {
+        gestureBase.current = null;
+        past.current = [];
+        future.current = [];
+        const fresh = createFreshBanner();
+        bannerRef.current = fresh;
+        setBanner(fresh);
+        syncHistory();
+    }, [syncHistory]);
+
     useEffect(() => {
         const timer = window.setTimeout(() => saveDraft(banner), 300);
         return () => window.clearTimeout(timer);
@@ -98,11 +149,18 @@ export function useBannerState() {
 
     return {
         banner,
+        selected: selectedText(banner),
         commit,
+        commitText,
         live,
+        liveText,
         endGesture,
         undo,
         redo,
+        reset,
+        addText,
+        removeText,
+        selectText,
         canUndo: history.undo > 0,
         canRedo: history.redo > 0,
     };
