@@ -2,6 +2,18 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("banner-maker-theme");
+          if (theme !== "dark" && theme !== "light") theme = "light";
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>유튜브 썸네일 만들기 | 무료 배너·숏폼 제작 - Thumbnail Maker</title>
     <meta
@@ -13,7 +25,7 @@
       content="유튜브 썸네일, 썸네일 만들기, 배너 제작, 숏폼 썸네일, 틱톡 썸네일, 채널 배너, Thumbnail Maker"
     />
     <meta name="author" content="Thumbnail Maker" />
-    <meta name="theme-color" content="#141518" />
+    <meta name="theme-color" content="#f3f4f6" />
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:title" content="유튜브 썸네일 만들기 | 무료 배너·숏폼 제작" />
     <meta property="og:site_name" content="Thumbnail Maker" />
