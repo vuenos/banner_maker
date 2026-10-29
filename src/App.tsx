@@ -84,6 +84,10 @@ import {
     readLocale,
     translate,
 } from "./i18n";
+import {
+    THUMBNAIL_SAMPLES,
+    buildThumbnailSample,
+} from "./thumbnailSamples";
 import { useBannerState } from "./useBannerState";
 
 const ANTD_LOCALES = {
@@ -362,6 +366,7 @@ function App() {
         selected,
         commit,
         commitText,
+        replaceBanner,
         live,
         liveText,
         endGesture,
@@ -774,6 +779,65 @@ function App() {
                             <div className="controls">
                                 {panelTab === "canvas" ? (
                                     <>
+                                        <section className="control-group">
+                                            <div className="control-label">
+                                                {t("samplesTitle")}
+                                            </div>
+                                            <div className="sample-grid">
+                                                {THUMBNAIL_SAMPLES.map(
+                                                    (sample) => (
+                                                        <Tooltip
+                                                            key={sample.id}
+                                                            title={t(
+                                                                sample.tipKey,
+                                                            )}
+                                                            placement="right"
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                className="sample-card"
+                                                                onClick={() => {
+                                                                    replaceBanner(
+                                                                        buildThumbnailSample(
+                                                                            sample.id,
+                                                                            t(
+                                                                                sample.textKey,
+                                                                            ),
+                                                                        ),
+                                                                    );
+                                                                    setZoom(
+                                                                        "fit",
+                                                                    );
+                                                                    setPicker(
+                                                                        null,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    className={`sample-card-preview sample-preview-${sample.id}`}
+                                                                    style={{
+                                                                        background:
+                                                                            sample.backgroundColor,
+                                                                    }}
+                                                                >
+                                                                    <span className="sample-card-text">
+                                                                        Aa
+                                                                    </span>
+                                                                </div>
+                                                                <span className="sample-card-name">
+                                                                    {t(
+                                                                        sample.labelKey,
+                                                                    )}
+                                                                </span>
+                                                            </button>
+                                                        </Tooltip>
+                                                    ),
+                                                )}
+                                            </div>
+                                            <p className="control-note">
+                                                {t("samplesNote")}
+                                            </p>
+                                        </section>
                                         <section className="control-group">
                                             <div className="control-label">
                                                 {t("saveSize")}

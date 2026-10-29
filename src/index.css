@@ -494,6 +494,96 @@ body {
   min-width: 0;
 }
 
+.sample-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.sample-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--studio-panel-border);
+  border-radius: var(--studio-radius);
+  background: var(--studio-surface);
+  color: var(--studio-text);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--studio-shadow);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.sample-card:hover {
+  background: var(--studio-card-hover);
+  border-color: var(--studio-hover-border);
+  transform: translateY(-1px);
+}
+
+.sample-card:focus-visible {
+  outline: 2px solid var(--studio-accent);
+  outline-offset: 2px;
+}
+
+.sample-card-preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sample-card-text {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+.sample-preview-variety .sample-card-text {
+  color: #ffd400;
+  text-shadow:
+    -2px -2px 0 #111,
+    2px -2px 0 #111,
+    -2px 2px 0 #111,
+    2px 2px 0 #111,
+    3px 3px 0 rgba(0, 0, 0, 0.85);
+}
+
+.sample-preview-spectrum .sample-card-text {
+  background: linear-gradient(90deg, #00aeef, #2d3192, #92278f, #ec008c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 1px #fff) drop-shadow(1px 1px 0 #fff);
+}
+
+.sample-preview-blush .sample-card-text {
+  background: linear-gradient(180deg, #ffffff, #ff6b8a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 #111);
+}
+
+.sample-preview-minimal .sample-card-text {
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.sample-card-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .preset-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

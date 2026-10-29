@@ -178,6 +178,20 @@ const ko: Dict = {
     presetYoutubeTip: "영상 목록에 보이는 미리보기 이미지 · 1280×720",
     presetChannel: "유튜브 채널 배너",
     presetChannelTip: "채널 상단 배너 · 2560×1440 · 점선은 안전 영역",
+    samplesTitle: "썸네일 샘플",
+    samplesNote: "클릭하면 유튜브 크기(1280×720)로 바로 적용됩니다. 되돌리기로 취소할 수 있어요.",
+    sampleVariety: "예능 타이틀",
+    sampleVarietyTip: "노란 타이틀 + 두꺼운 외곽선 · 다크 배경",
+    sampleSpectrum: "스펙트럼",
+    sampleSpectrumTip: "그라데이션 글자 + 어두운 배경",
+    sampleBlush: "블러시",
+    sampleBlushTip: "분홍 그라데이션 글자 + 밝은 배경",
+    sampleMinimal: "미니멀",
+    sampleMinimalTip: "흰 글자 + 단색 배경",
+    sampleText_variety: "지금 바로 클릭",
+    sampleText_spectrum: "오늘만 공개",
+    sampleText_blush: "같이 봐요",
+    sampleText_minimal: "시작하세요",
 };
 
 const en: Dict = {
@@ -303,6 +317,20 @@ const en: Dict = {
     presetYoutubeTip: "Preview image in video lists · 1280×720",
     presetChannel: "YouTube channel banner",
     presetChannelTip: "Channel header · 2560×1440 · dashed safe area",
+    samplesTitle: "Thumbnail samples",
+    samplesNote: "Click to apply a 1280×720 YouTube layout. Undo to revert.",
+    sampleVariety: "Variety title",
+    sampleVarietyTip: "Yellow title with thick outline · dark background",
+    sampleSpectrum: "Spectrum",
+    sampleSpectrumTip: "Gradient type on a dark background",
+    sampleBlush: "Blush",
+    sampleBlushTip: "Pink gradient type on a light background",
+    sampleMinimal: "Minimal",
+    sampleMinimalTip: "White type on a solid color",
+    sampleText_variety: "Click now",
+    sampleText_spectrum: "Today only",
+    sampleText_blush: "Watch with me",
+    sampleText_minimal: "Start here",
 };
 
 const ja: Dict = {
@@ -428,6 +456,20 @@ const ja: Dict = {
     presetYoutubeTip: "一覧のプレビュー画像 · 1280×720",
     presetChannel: "YouTubeチャンネルバナー",
     presetChannelTip: "チャンネル上部バナー · 2560×1440 · 破線はセーフエリア",
+    samplesTitle: "サムネイルサンプル",
+    samplesNote: "クリックでYouTubeサイズ（1280×720）を適用。元に戻すで取り消せます。",
+    sampleVariety: "バラエティタイトル",
+    sampleVarietyTip: "黄色いタイトルと太い輪郭 · ダーク背景",
+    sampleSpectrum: "スペクトラム",
+    sampleSpectrumTip: "グラデーション文字 + 暗い背景",
+    sampleBlush: "ブラッシュ",
+    sampleBlushTip: "ピンクのグラデーション文字 + 明るい背景",
+    sampleMinimal: "ミニマル",
+    sampleMinimalTip: "白い文字 + 単色背景",
+    sampleText_variety: "今すぐクリック",
+    sampleText_spectrum: "本日限定",
+    sampleText_blush: "一緒に見よう",
+    sampleText_minimal: "ここから始めて",
 };
 
 const es: Dict = {
@@ -554,6 +596,20 @@ const es: Dict = {
     presetYoutubeTip: "Imagen de vista previa en listas · 1280×720",
     presetChannel: "Banner de canal de YouTube",
     presetChannelTip: "Cabecera del canal · 2560×1440 · área segura a puntos",
+    samplesTitle: "Muestras de miniaturas",
+    samplesNote: "Haz clic para aplicar un diseño 1280×720. Deshacer para revertir.",
+    sampleVariety: "Título variety",
+    sampleVarietyTip: "Título amarillo con contorno grueso · fondo oscuro",
+    sampleSpectrum: "Spectrum",
+    sampleSpectrumTip: "Texto degradado sobre fondo oscuro",
+    sampleBlush: "Blush",
+    sampleBlushTip: "Texto degradado rosa sobre fondo claro",
+    sampleMinimal: "Minimal",
+    sampleMinimalTip: "Texto blanco sobre color sólido",
+    sampleText_variety: "Haz clic ya",
+    sampleText_spectrum: "Solo hoy",
+    sampleText_blush: "Míralo conmigo",
+    sampleText_minimal: "Empieza aquí",
 };
 
 const dictionaries: Record<Locale, Dict> = { ko, en, ja, es };
@@ -696,8 +752,25 @@ export function pickPhrase(locale: Locale): string {
     return phrases[Math.floor(Math.random() * phrases.length)];
 }
 
+const SAMPLE_TEXT_KEYS = [
+    "sampleText_variety",
+    "sampleText_spectrum",
+    "sampleText_blush",
+    "sampleText_minimal",
+] as const;
+
+function sampleTextKeyFor(text: string): (typeof SAMPLE_TEXT_KEYS)[number] | null {
+    for (const key of SAMPLE_TEXT_KEYS) {
+        for (const code of LOCALES) {
+            if (dictionaries[code][key] === text) return key;
+        }
+    }
+    return null;
+}
+
 export function isStockCanvasText(text: string): boolean {
     if (LEGACY_STOCK_TEXTS.has(text)) return true;
+    if (sampleTextKeyFor(text)) return true;
     for (const locale of LOCALES) {
         if (dictionaries[locale].newText === text) return true;
         if (PHRASES_BY_LOCALE[locale].includes(text)) return true;
@@ -708,6 +781,8 @@ export function isStockCanvasText(text: string): boolean {
 /** Map starter / random-pool canvas copy into the target locale. */
 export function localizeStockText(text: string, locale: Locale): string | null {
     if (!isStockCanvasText(text)) return null;
+    const sampleKey = sampleTextKeyFor(text);
+    if (sampleKey) return dictionaries[locale][sampleKey];
     const index = stockPhraseIndex(text);
     const phrases = PHRASES_BY_LOCALE[locale];
     if (index != null) return phrases[index % phrases.length];

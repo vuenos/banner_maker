@@ -80,6 +80,14 @@ export function useBannerState(locale: Locale) {
         [apply],
     );
 
+    const replaceBanner = useCallback(
+        (next: Banner) => {
+            gestureBase.current = null;
+            apply(next, true);
+        },
+        [apply],
+    );
+
     const commitText = useCallback(
         (partial: Partial<TextLayer>) => {
             gestureBase.current = null;
@@ -187,6 +195,7 @@ export function useBannerState(locale: Locale) {
         selected: selectedText(banner),
         commit,
         commitText,
+        replaceBanner,
         live,
         liveText,
         endGesture,
