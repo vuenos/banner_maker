@@ -134,6 +134,8 @@ const ko: Dict = {
     moveTextAria: "글자 이동",
     editHint: "글자를 추가하고, 스타일을 고른 뒤 드래그로 자리를 옮기세요.",
     seoNav: "이용 안내",
+    guideOpenAria: "이용 안내 열기",
+    guidePageLink: "페이지 아래로 보기",
     seoTitle: "무료 유튜브 썸네일·배너 제작 도구",
     seoLead:
         "Thumbnail Maker로 유튜브 영상 썸네일, 숏폼(쇼츠)·틱톡 썸네일, 채널 배너를 브라우저에서 바로 만들고 PNG로 저장하세요. 가입과 설치가 필요 없습니다.",
@@ -257,6 +259,8 @@ const en: Dict = {
     moveTextAria: "Move text",
     editHint: "Add text, pick a style, then drag to place it.",
     seoNav: "Guide",
+    guideOpenAria: "Open guide",
+    guidePageLink: "View on page",
     seoTitle: "Free YouTube thumbnail & banner maker",
     seoLead:
         "Make YouTube thumbnails, Shorts/TikTok covers, and channel banners in your browser with Thumbnail Maker. Save as PNG—no sign-up or install.",
@@ -380,6 +384,8 @@ const ja: Dict = {
     moveTextAria: "文字を移動",
     editHint: "文字を追加し、スタイルを選んでからドラッグで配置します。",
     seoNav: "ご案内",
+    guideOpenAria: "ご案内を開く",
+    guidePageLink: "ページで見る",
     seoTitle: "無料のYouTubeサムネイル・バナー作成ツール",
     seoLead:
         "Thumbnail MakerでYouTubeサムネイル、ショート/TikTok用カバー、チャンネルバナーをブラウザで作成し、PNGで保存。登録・インストール不要。",
@@ -504,6 +510,8 @@ const es: Dict = {
     moveTextAria: "Mover texto",
     editHint: "Añade texto, elige un estilo y arrástralo para colocarlo.",
     seoNav: "Guía",
+    guideOpenAria: "Abrir guía",
+    guidePageLink: "Ver en la página",
     seoTitle: "Creador gratis de miniaturas y banners de YouTube",
     seoLead:
         "Crea miniaturas de YouTube, portadas para Shorts/TikTok y banners de canal en el navegador con Thumbnail Maker. Guarda en PNG—sin registro ni instalación.",

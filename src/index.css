@@ -739,10 +739,121 @@ body {
   text-align: center;
 }
 
+.edit-hint-link {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--studio-accent);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.edit-hint-link:hover {
+  opacity: 0.85;
+}
+
+.guide-page-link {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--studio-accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.guide-page-link:hover {
+  opacity: 0.85;
+}
+
+.guide-fab {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 5px;
+  border: 1px solid var(--studio-panel-border);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  background: color-mix(in srgb, var(--studio-panel) 92%, transparent);
+  color: var(--studio-muted);
+  box-shadow: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.15;
+  cursor: pointer;
+  transform: translate(calc(100% - 22px), -50%);
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.06em;
+}
+
+.guide-fab .anticon {
+  font-size: 13px;
+  color: var(--studio-accent);
+  writing-mode: horizontal-tb;
+}
+
+.guide-fab:hover,
+.guide-fab:focus-visible {
+  transform: translate(0, -50%);
+  background: var(--studio-panel);
+  color: var(--studio-accent);
+}
+
+.guide-fab:focus-visible {
+  outline: 2px solid var(--studio-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-fab {
+    transition: none;
+  }
+}
+
+.guide-drawer .ant-drawer-content {
+  background: var(--studio-panel);
+  color: var(--studio-text);
+}
+
+.guide-drawer-body .seo-lead {
+  margin-top: 0;
+}
+
+.guide-drawer-body .seo-grid {
+  grid-template-columns: 1fr;
+  margin-top: 20px;
+}
+
+.guide-drawer-body .seo-faq {
+  margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .guide-drawer.ant-drawer-right > .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
+
 .seo-panel {
   background: var(--studio-panel);
   border-top: 1px solid var(--studio-panel-border);
   color: var(--studio-text);
+  scroll-margin-top: 16px;
 }
 
 .seo-inner {
@@ -759,7 +870,7 @@ body {
   line-height: 1.25;
 }
 
-.seo-header p {
+.seo-lead {
   margin: 0;
   color: var(--studio-muted);
   font-size: 16px;
@@ -938,6 +1049,12 @@ body {
     justify-content: center;
     padding: 0;
     overflow: hidden;
+  }
+
+  .guide-fab {
+    padding: 8px 4px;
+    font-size: 10px;
+    transform: translate(calc(100% - 18px), -50%);
   }
 
   .panel-content {

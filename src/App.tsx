@@ -15,6 +15,7 @@ import html2canvas from "html2canvas";
 import {
     Button,
     ConfigProvider,
+    Drawer,
     Dropdown,
     Input,
     Modal,
@@ -47,6 +48,7 @@ import {
     MobileOutlined,
     PictureOutlined,
     PlusOutlined,
+    QuestionCircleOutlined,
     RedoOutlined,
     UndoOutlined,
     YoutubeOutlined,
@@ -82,6 +84,7 @@ import {
     readLocale,
     translate,
 } from "./i18n";
+import { useBannerState } from "./useBannerState";
 
 const ANTD_LOCALES = {
     ko: koKR,
@@ -93,7 +96,71 @@ const ANTD_LOCALES = {
 function seoLandingBase(locale: Locale) {
     return locale === "ko" ? "" : `/${locale}`;
 }
-import { useBannerState } from "./useBannerState";
+
+function SeoGuideBody({
+    t,
+    locale,
+}: {
+    t: (key: string) => string;
+    locale: Locale;
+}) {
+    const base = seoLandingBase(locale);
+    return (
+        <>
+            <p className="seo-lead">{t("seoLead")}</p>
+            <div className="seo-grid">
+                <article className="seo-card">
+                    <h3>{t("howTitle")}</h3>
+                    <ol className="seo-steps">
+                        <li>{t("how1")}</li>
+                        <li>{t("how2")}</li>
+                        <li>{t("how3")}</li>
+                        <li>{t("how4")}</li>
+                    </ol>
+                </article>
+                <article className="seo-card">
+                    <h3>{t("sizesTitle")}</h3>
+                    <ul className="seo-list">
+                        <li>
+                            <a href={`${base}/youtube-thumbnail/`}>
+                                {t("sizeYoutube")}
+                            </a>
+                        </li>
+                        <li>
+                            <a href={`${base}/shorts-thumbnail/`}>
+                                {t("sizeShorts")}
+                            </a>
+                        </li>
+                        <li>
+                            <a href={`${base}/channel-banner/`}>
+                                {t("sizeChannel")}
+                            </a>
+                        </li>
+                        <li>{t("sizeVideo")}</li>
+                    </ul>
+                </article>
+            </div>
+            <div className="seo-faq">
+                <h3>{t("faqTitle")}</h3>
+                {(
+                    [
+                        ["faq1q", "faq1a"],
+                        ["faq2q", "faq2a"],
+                        ["faq3q", "faq3a"],
+                        ["faq4q", "faq4a"],
+                        ["faq5q", "faq5a"],
+                        ["faq6q", "faq6a"],
+                    ] as const
+                ).map(([q, a]) => (
+                    <details key={q}>
+                        <summary>{t(q)}</summary>
+                        <p>{t(a)}</p>
+                    </details>
+                ))}
+            </div>
+        </>
+    );
+}
 
 type Picker = "bg" | "font" | "stroke" | null;
 type Zoom = "fit" | "50" | "100";
@@ -314,6 +381,7 @@ function App() {
     const [panelTab, setPanelTab] = useState<PanelTab>("text");
     const [themeMode, setThemeMode] = useState<ThemeMode>(readThemeMode);
     const [exporting, setExporting] = useState(false);
+    const [guideOpen, setGuideOpen] = useState(false);
 
     useEffect(() => {
         applyThemeMode(themeMode);
@@ -1360,74 +1428,68 @@ function App() {
                                 ) : null}
                             </div>
                         </div>
-                        <p className="edit-hint">{t("editHint")}</p>
+                        <p className="edit-hint">
+                            {t("editHint")}{" "}
+                            <button
+                                type="button"
+                                className="edit-hint-link"
+                                onClick={() => setGuideOpen(true)}
+                            >
+                                {t("seoNav")}
+                            </button>
+                        </p>
                     </main>
                 </div>
             </div>
-            <section className="seo-panel" aria-label={t("seoNav")}>
+            {!guideOpen ? (
+                <button
+                    type="button"
+                    className="guide-fab"
+                    aria-label={t("guideOpenAria")}
+                    onClick={() => setGuideOpen(true)}
+                >
+                    <QuestionCircleOutlined aria-hidden />
+                    <span>{t("seoNav")}</span>
+                </button>
+            ) : null}
+            <Drawer
+                title={t("seoNav")}
+                placement="right"
+                width={440}
+                open={guideOpen}
+                onClose={() => setGuideOpen(false)}
+                destroyOnClose={false}
+                rootClassName="guide-drawer"
+                classNames={{ body: "guide-drawer-body" }}
+                extra={
+                    <button
+                        type="button"
+                        className="guide-page-link"
+                        onClick={() => {
+                            setGuideOpen(false);
+                            window.requestAnimationFrame(() => {
+                                document
+                                    .getElementById("guide")
+                                    ?.scrollIntoView({ behavior: "smooth" });
+                            });
+                        }}
+                    >
+                        {t("guidePageLink")}
+                    </button>
+                }
+            >
+                <SeoGuideBody t={t} locale={locale} />
+            </Drawer>
+            <section
+                id="guide"
+                className="seo-panel"
+                aria-label={t("seoNav")}
+            >
                 <div className="seo-inner">
                     <header className="seo-header">
                         <h2>{t("seoTitle")}</h2>
-                        <p>{t("seoLead")}</p>
                     </header>
-
-                    <div className="seo-grid">
-                        <article className="seo-card">
-                            <h3>{t("howTitle")}</h3>
-                            <ol className="seo-steps">
-                                <li>{t("how1")}</li>
-                                <li>{t("how2")}</li>
-                                <li>{t("how3")}</li>
-                                <li>{t("how4")}</li>
-                            </ol>
-                        </article>
-                        <article className="seo-card">
-                            <h3>{t("sizesTitle")}</h3>
-                            <ul className="seo-list">
-                                <li>
-                                    <a
-                                        href={`${seoLandingBase(locale)}/youtube-thumbnail/`}
-                                    >
-                                        {t("sizeYoutube")}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href={`${seoLandingBase(locale)}/shorts-thumbnail/`}
-                                    >
-                                        {t("sizeShorts")}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href={`${seoLandingBase(locale)}/channel-banner/`}
-                                    >
-                                        {t("sizeChannel")}
-                                    </a>
-                                </li>
-                                <li>{t("sizeVideo")}</li>
-                            </ul>
-                        </article>
-                    </div>
-
-                    <div className="seo-faq">
-                        <h3>{t("faqTitle")}</h3>
-                        {(
-                            [
-                                ["faq1q", "faq1a"],
-                                ["faq2q", "faq2a"],
-                                ["faq3q", "faq3a"],
-                                ["faq4q", "faq4a"],
-                                ["faq5q", "faq5a"],
-                                ["faq6q", "faq6a"],
-                            ] as const
-                        ).map(([q, a]) => (
-                            <details key={q}>
-                                <summary>{t(q)}</summary>
-                                <p>{t(a)}</p>
-                            </details>
-                        ))}
-                    </div>
+                    <SeoGuideBody t={t} locale={locale} />
                 </div>
             </section>
             <Analytics />
