@@ -184,6 +184,48 @@ body {
   background: var(--studio-card);
 }
 
+#download-button.ant-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #cecece;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #cb21bd 0%, #5c1eed 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none;
+  transition: opacity 0.3s;
+}
+
+#download-button.ant-btn-primary > span,
+#download-button.ant-btn-primary .ant-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+#download-button.ant-btn-primary:not(:disabled):hover,
+#download-button.ant-btn-primary:not(:disabled):focus,
+#download-button.ant-btn-primary:not(:disabled):active {
+  border-color: #cecece !important;
+  background: linear-gradient(45deg, #cb21bd 0%, #5c1eed 100%) !important;
+  color: #fff !important;
+  opacity: 0.8;
+}
+
+#download-button.ant-btn-primary:disabled,
+#download-button.ant-btn-primary.ant-btn-loading {
+  border-color: #cecece;
+  background: linear-gradient(45deg, #cb21bd 0%, #5c1eed 100%);
+  color: #fff;
+  opacity: 0.7;
+}
+
 .studio-body {
   display: flex;
   flex: 1 1 auto;
