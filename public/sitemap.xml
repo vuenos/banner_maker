@@ -1,8 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.thumbnail.co.kr/</loc>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/youtube-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/en/youtube-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/ja/youtube-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/es/youtube-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/youtube-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/youtube-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/shorts-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/en/shorts-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/ja/shorts-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/es/shorts-thumbnail/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/shorts-thumbnail/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/shorts-thumbnail/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/channel-banner/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/channel-banner/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/en/channel-banner/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/channel-banner/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/ja/channel-banner/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/channel-banner/" />
+  </url>
+  <url>
+    <loc>https://www.thumbnail.co.kr/es/channel-banner/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/en/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/ja/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/es/channel-banner/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/channel-banner/" />
   </url>
 </urlset>

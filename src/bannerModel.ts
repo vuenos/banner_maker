@@ -127,26 +127,6 @@ export const PRESETS: {
     },
 ];
 
-export const PHRASES = [
-    "독도는 우리땅",
-    "Of the People, By the People, For the People",
-    "당신이 포기할 때, 나는 시작한다.",
-    "준비하지 않은 자는 기회가 와도 소용없다",
-    "쓴 맛을 모르는 사람은 단 맛도 모른다.",
-    "I never dreamed about success, I worked for it.",
-    "No pain no gain.",
-    "I'll be back",
-    "Early bird catches the worm.",
-    "솔직히 내 사랑, 내 알 바 아니오.\n(Frankly, my dear, I don't give a damn.)",
-    "당신의 눈동자에 건배.\n(Here's looking at you, kid.)",
-    "포스가 함께하길.\n(May the Force be with you.)",
-    "내일은 내일의 태양이 뜰 거야!\n(After all, tomorrow is another day!)",
-    "친구는 가까이, 허나 적은 더 가까이.\n(Keep your friends close, but your enemies closer.)",
-    "The die is cast. – Julius caesar",
-    "Life is unfair, get used to it. – Bill Gates",
-    "Stay hungry, stay foolish",
-];
-
 export function randomHex() {
     return (
         "#" +
@@ -154,10 +134,6 @@ export function randomHex() {
             .toString(16)
             .padStart(6, "0")
     );
-}
-
-export function randomPhrase() {
-    return PHRASES[Math.floor(Math.random() * PHRASES.length)];
 }
 
 export function clampSize(value: number) {
@@ -369,7 +345,7 @@ export function createTextLayer(
 
     return {
         id: typeof input.id === "string" && input.id ? input.id : newTextId(),
-        text: typeof input.text === "string" ? input.text : "새 글자",
+        text: typeof input.text === "string" ? input.text : "Sample Text",
         fontSize: clampFontSize(Number(input.fontSize ?? 80)),
         fontFamily,
         fontColor: normalizeHex(input.fontColor, "#FFFFFF"),
@@ -406,9 +382,9 @@ export const DEFAULT_BANNER: Banner = (() => {
 })();
 
 /** First-visit / reset banner: youtube size, random bg, single random phrase. */
-export function createFreshBanner(): Banner {
+export function createFreshBanner(text = "Sample Text"): Banner {
     const layer = createTextLayer({
-        text: randomPhrase(),
+        text,
         fontSize: 80,
         fontFamily: "East Sea Dokdo",
         fontColor: "#FFFFFF",
@@ -474,7 +450,7 @@ export function sanitize(input: Partial<Banner> | Record<string, unknown>): Bann
     if (texts.length === 0) {
         texts = [
             createTextLayer(
-                { text: randomPhrase(), fontFamily: "East Sea Dokdo" },
+                { text: "Sample Text", fontFamily: "East Sea Dokdo" },
                 { width, height },
             ),
         ];
@@ -523,7 +499,7 @@ export function withSelectedText(
     };
 }
 
-export function addTextLayer(banner: Banner, text = "새 글자"): Banner {
+export function addTextLayer(banner: Banner, text = "Sample Text"): Banner {
     if (banner.texts.length >= MAX_TEXTS) return banner;
     const index = banner.texts.length;
     const layer = createTextLayer(

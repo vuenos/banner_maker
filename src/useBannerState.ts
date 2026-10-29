@@ -13,17 +13,39 @@ import {
     selectedText,
     withSelectedText,
 } from "./bannerModel";
+import {
+    Locale,
+    localizeStockText,
+    pickPhrase,
+    translate,
+} from "./i18n";
 
-function createInitialBanner() {
-    return loadDraft() ?? createFreshBanner();
+function withLocalizedStockTexts(banner: Banner, locale: Locale): Banner {
+    let changed = false;
+    const texts = banner.texts.map((layer) => {
+        const nextText = localizeStockText(layer.text, locale);
+        if (nextText == null || nextText === layer.text) return layer;
+        changed = true;
+        return { ...layer, text: nextText };
+    });
+    return changed ? { ...banner, texts } : banner;
 }
 
-export function useBannerState() {
-    const [banner, setBanner] = useState<Banner>(createInitialBanner);
+function createInitialBanner(locale: Locale) {
+    const draft = loadDraft();
+    if (draft) return withLocalizedStockTexts(draft, locale);
+    return createFreshBanner(pickPhrase(locale));
+}
+
+export function useBannerState(locale: Locale) {
+    const [banner, setBanner] = useState<Banner>(() =>
+        createInitialBanner(locale),
+    );
     const bannerRef = useRef(banner);
     const past = useRef<Banner[]>([]);
     const future = useRef<Banner[]>([]);
     const gestureBase = useRef<Banner | null>(null);
+    const localeRef = useRef(locale);
     const [history, setHistory] = useState({ undo: 0, redo: 0 });
 
     const syncHistory = useCallback(() => {
@@ -114,8 +136,11 @@ export function useBannerState() {
 
     const addText = useCallback(() => {
         gestureBase.current = null;
-        apply(addTextLayer(bannerRef.current), true);
-    }, [apply]);
+        apply(
+            addTextLayer(bannerRef.current, translate(locale, "newText")),
+            true,
+        );
+    }, [apply, locale]);
 
     const removeText = useCallback(
         (id?: string) => {
@@ -136,16 +161,26 @@ export function useBannerState() {
         gestureBase.current = null;
         past.current = [];
         future.current = [];
-        const fresh = createFreshBanner();
+        const fresh = createFreshBanner(pickPhrase(locale));
         bannerRef.current = fresh;
         setBanner(fresh);
         syncHistory();
-    }, [syncHistory]);
+    }, [locale, syncHistory]);
 
     useEffect(() => {
         const timer = window.setTimeout(() => saveDraft(banner), 300);
         return () => window.clearTimeout(timer);
     }, [banner]);
+
+    useEffect(() => {
+        if (localeRef.current === locale) return;
+        localeRef.current = locale;
+        gestureBase.current = null;
+        const next = withLocalizedStockTexts(bannerRef.current, locale);
+        if (next === bannerRef.current) return;
+        bannerRef.current = next;
+        setBanner(next);
+    }, [locale]);
 
     return {
         banner,

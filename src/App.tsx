@@ -15,6 +15,7 @@ import html2canvas from "html2canvas";
 import {
     Button,
     ConfigProvider,
+    Dropdown,
     Input,
     Modal,
     Select,
@@ -22,6 +23,11 @@ import {
     theme,
     message,
 } from "antd";
+import type { MenuProps } from "antd";
+import enUS from "antd/locale/en_US";
+import esES from "antd/locale/es_ES";
+import jaJP from "antd/locale/ja_JP";
+import koKR from "antd/locale/ko_KR";
 import {
     AlignCenterOutlined,
     AlignLeftOutlined,
@@ -34,6 +40,7 @@ import {
     DragOutlined,
     FontSizeOutlined,
     BulbOutlined,
+    GlobalOutlined,
     LayoutOutlined,
     MailOutlined,
     MessageOutlined,
@@ -61,8 +68,31 @@ import {
     layerStrokeStyle,
     layerVisualStyle,
     randomHex,
-    randomPhrase,
 } from "./bannerModel";
+import {
+    LOCALES,
+    LOCALE_LABELS,
+    LOCALE_SHORT,
+    LOCALE_STORAGE_KEY,
+    Locale,
+    PRESET_I18N,
+    STYLE_I18N,
+    applyLocale,
+    pickPhrase,
+    readLocale,
+    translate,
+} from "./i18n";
+
+const ANTD_LOCALES = {
+    ko: koKR,
+    en: enUS,
+    ja: jaJP,
+    es: esES,
+} as const;
+
+function seoLandingBase(locale: Locale) {
+    return locale === "ko" ? "" : `/${locale}`;
+}
 import { useBannerState } from "./useBannerState";
 
 type Picker = "bg" | "font" | "stroke" | null;
@@ -91,12 +121,12 @@ function applyThemeMode(mode: ThemeMode) {
 
 const PANEL_TABS: {
     id: PanelTab;
-    label: string;
+    labelKey: string;
     icon: ReactNode;
 }[] = [
-    { id: "canvas", label: "크기", icon: <LayoutOutlined /> },
-    { id: "text", label: "글자", icon: <FontSizeOutlined /> },
-    { id: "background", label: "배경", icon: <PictureOutlined /> },
+    { id: "canvas", labelKey: "tabCanvas", icon: <LayoutOutlined /> },
+    { id: "text", labelKey: "tabText", icon: <FontSizeOutlined /> },
+    { id: "background", labelKey: "tabBackground", icon: <PictureOutlined /> },
 ];
 
 const PRESET_ICONS: Record<string, ReactNode> = {
@@ -258,6 +288,8 @@ function usePreviewScale(width: number, height: number, zoom: Zoom) {
 }
 
 function App() {
+    const [locale, setLocale] = useState<Locale>(readLocale);
+    const t = useCallback((key: string) => translate(locale, key), [locale]);
     const {
         banner,
         selected,
@@ -274,7 +306,7 @@ function App() {
         selectText,
         canUndo,
         canRedo,
-    } = useBannerState();
+    } = useBannerState(locale);
     const [picker, setPicker] = useState<Picker>(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const pickerAnchorRef = useRef<HTMLElement | null>(null);
@@ -291,6 +323,20 @@ function App() {
             /* ignore */
         }
     }, [themeMode]);
+
+    useEffect(() => {
+        applyLocale(locale);
+        document.title = t("docTitle");
+        const description = document.querySelector('meta[name="description"]');
+        if (description) {
+            description.setAttribute("content", t("docDescription"));
+        }
+        try {
+            localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+        } catch {
+            /* ignore */
+        }
+    }, [locale, t]);
     const canvasRef = useRef<HTMLDivElement>(null);
     const slotRef = useRef<HTMLDivElement>(null);
     const editorRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -486,7 +532,7 @@ function App() {
             link.download = `banner-${banner.width}x${banner.height}.png`;
             link.click();
         } catch {
-            message.error("Could not create the image.");
+            message.error(t("exportError"));
         } finally {
             setExporting(false);
         }
@@ -507,22 +553,54 @@ function App() {
     const displayHeight = banner.height * scale;
 
     return (
-        <ConfigProvider theme={studioTheme(themeMode)}>
+        <ConfigProvider
+            locale={ANTD_LOCALES[locale]}
+            theme={studioTheme(themeMode)}
+        >
             <div className="studio">
                 <header className="studio-topbar">
                     <div className="studio-brand">
                         <img src={logoImg} alt="" width={28} height={28} />
                         <div className="studio-brand-copy">
-                            <h1>Thumbnail Maker</h1>
-                            <p>유튜브 썸네일 · 배너 무료 제작</p>
+                            <h1>{t("brandTitle")}</h1>
+                            <p>{t("brandSubtitle")}</p>
                         </div>
                     </div>
                     <div className="studio-topbar-actions">
+                        <Dropdown
+                            trigger={["click"]}
+                            menu={
+                                {
+                                    selectable: true,
+                                    selectedKeys: [locale],
+                                    onClick: ({ key }) => {
+                                        if (
+                                            LOCALES.includes(key as Locale)
+                                        ) {
+                                            setLocale(key as Locale);
+                                        }
+                                    },
+                                    items: LOCALES.map((code) => ({
+                                        key: code,
+                                        label: LOCALE_LABELS[code],
+                                    })),
+                                } satisfies MenuProps
+                            }
+                        >
+                            <Button
+                                size="middle"
+                                icon={<GlobalOutlined />}
+                                aria-label={t("langSwitchAria")}
+                                aria-haspopup="menu"
+                            >
+                                {LOCALE_SHORT[locale]}
+                            </Button>
+                        </Dropdown>
                         <Tooltip
                             title={
                                 themeMode === "light"
-                                    ? "다크 테마"
-                                    : "라이트 테마"
+                                    ? t("themeToDark")
+                                    : t("themeToLight")
                             }
                         >
                             <Button
@@ -530,8 +608,8 @@ function App() {
                                 icon={<BulbOutlined />}
                                 aria-label={
                                     themeMode === "light"
-                                        ? "다크 테마로 전환"
-                                        : "라이트 테마로 전환"
+                                        ? t("themeToDarkAria")
+                                        : t("themeToLightAria")
                                 }
                                 onClick={() =>
                                     setThemeMode((mode) =>
@@ -540,40 +618,39 @@ function App() {
                                 }
                             />
                         </Tooltip>
-                        <Tooltip title="실행 취소">
+                        <Tooltip title={t("undo")}>
                             <span>
                                 <Button
                                     size="middle"
                                     icon={<UndoOutlined />}
-                                    aria-label="실행 취소"
+                                    aria-label={t("undo")}
                                     disabled={!canUndo}
                                     onClick={undo}
                                 />
                             </span>
                         </Tooltip>
-                        <Tooltip title="다시 실행">
+                        <Tooltip title={t("redo")}>
                             <span>
                                 <Button
                                     size="middle"
                                     icon={<RedoOutlined />}
-                                    aria-label="다시 실행"
+                                    aria-label={t("redo")}
                                     disabled={!canRedo}
                                     onClick={redo}
                                 />
                             </span>
                         </Tooltip>
-                        <Tooltip title="처음 상태로 되돌리기">
+                        <Tooltip title={t("resetTooltip")}>
                             <Button
                                 size="middle"
                                 icon={<ClearOutlined />}
-                                aria-label="초기화"
+                                aria-label={t("reset")}
                                 onClick={() => {
                                     Modal.confirm({
-                                        title: "초기화할까요?",
-                                        content:
-                                            "크기·글자·배경·히스토리가 처음 상태로 돌아갑니다.",
-                                        okText: "초기화",
-                                        cancelText: "취소",
+                                        title: t("resetConfirmTitle"),
+                                        content: t("resetConfirmBody"),
+                                        okText: t("resetOk"),
+                                        cancelText: t("resetCancel"),
                                         okButtonProps: { danger: true },
                                         onOk: () => {
                                             reset();
@@ -583,12 +660,12 @@ function App() {
                                     });
                                 }}
                             >
-                                초기화
+                                {t("reset")}
                             </Button>
                         </Tooltip>
                         <a className="studio-contact" href="mailto:vuenos@gmail.com">
                             <MailOutlined />
-                            Contact
+                            {t("contact")}
                         </a>
                         <Button
                             id="download-button"
@@ -598,28 +675,30 @@ function App() {
                             loading={exporting}
                             onClick={downloadImage}
                         >
-                            이미지 저장
+                            {t("saveImage")}
                         </Button>
                     </div>
                 </header>
 
                 <div className="studio-body">
                     <aside className="studio-panel">
-                        <nav className="panel-rail" aria-label="편집 기능">
+                        <nav className="panel-rail" aria-label={t("panelNav")}>
                             {PANEL_TABS.map((tab) => (
                                 <button
                                     key={tab.id}
                                     type="button"
                                     className={`panel-rail-btn${panelTab === tab.id ? " is-active" : ""}`}
                                     aria-pressed={panelTab === tab.id}
-                                    aria-label={tab.label}
+                                    aria-label={t(tab.labelKey)}
                                     onClick={() => {
                                         setPanelTab(tab.id);
                                         closePicker();
                                     }}
                                 >
                                     <span className="panel-rail-icon">{tab.icon}</span>
-                                    <span className="panel-rail-label">{tab.label}</span>
+                                    <span className="panel-rail-label">
+                                        {t(tab.labelKey)}
+                                    </span>
                                 </button>
                             ))}
                         </nav>
@@ -628,10 +707,12 @@ function App() {
                                 {panelTab === "canvas" ? (
                                     <>
                                         <section className="control-group">
-                                            <div className="control-label">저장 크기</div>
+                                            <div className="control-label">
+                                                {t("saveSize")}
+                                            </div>
                                             <div className="split-row size-row">
                                                 <NumberField
-                                                    addonBefore="가로"
+                                                    addonBefore={t("width")}
                                                     value={banner.width}
                                                     min={64}
                                                     max={4096}
@@ -640,7 +721,7 @@ function App() {
                                                     }
                                                 />
                                                 <NumberField
-                                                    addonBefore="세로"
+                                                    addonBefore={t("height")}
                                                     value={banner.height}
                                                     min={64}
                                                     max={4096}
@@ -656,10 +737,12 @@ function App() {
                                                             preset.width &&
                                                         banner.height ===
                                                             preset.height;
+                                                    const i18n =
+                                                        PRESET_I18N[preset.id];
                                                     return (
                                                         <Tooltip
                                                             key={preset.id}
-                                                            title={preset.tooltip}
+                                                            title={t(i18n.tip)}
                                                             placement="right"
                                                         >
                                                             <button
@@ -701,9 +784,9 @@ function App() {
                                                                 </div>
                                                                 <div className="preset-card-meta">
                                                                     <span className="preset-name">
-                                                                        {
-                                                                            preset.label
-                                                                        }
+                                                                        {t(
+                                                                            i18n.label,
+                                                                        )}
                                                                     </span>
                                                                     <span className="preset-meta">
                                                                         {
@@ -722,37 +805,38 @@ function App() {
                                             </div>
                                             {banner.guide === "channel" ? (
                                                 <p className="control-note">
-                                                    점선 안이 모든 기기에서 보이는
-                                                    영역입니다. 점선은 저장되지
-                                                    않습니다.
+                                                    {t("channelGuideNote")}
                                                 </p>
                                             ) : null}
                                         </section>
                                         <section className="control-group">
                                             <div className="control-label">
-                                                화면 배율
+                                                {t("previewZoom")}
                                             </div>
                                             <div className="button-row zoom-row">
                                                 {(
                                                     [
                                                         [
                                                             "fit",
-                                                            "맞추기",
-                                                            "미리보기만 화면에 맞춤",
+                                                            "zoomFit",
+                                                            "zoomFitTip",
                                                         ],
                                                         [
                                                             "50",
-                                                            "50%",
-                                                            "미리보기를 절반 크기로",
+                                                            "zoom50",
+                                                            "zoom50Tip",
                                                         ],
                                                         [
                                                             "100",
-                                                            "100%",
-                                                            "저장 픽셀과 같은 크기",
+                                                            "zoom100",
+                                                            "zoom100Tip",
                                                         ],
                                                     ] as const
-                                                ).map(([id, label, tip]) => (
-                                                    <Tooltip key={id} title={tip}>
+                                                ).map(([id, labelKey, tipKey]) => (
+                                                    <Tooltip
+                                                        key={id}
+                                                        title={t(tipKey)}
+                                                    >
                                                         <Button
                                                             type={
                                                                 zoom === id
@@ -764,7 +848,7 @@ function App() {
                                                                 setZoom(id)
                                                             }
                                                         >
-                                                            {label}
+                                                            {t(labelKey)}
                                                         </Button>
                                                     </Tooltip>
                                                 ))}
@@ -776,9 +860,11 @@ function App() {
                                 {panelTab === "text" ? (
                                     <section className="control-group">
                                         <div className="control-label-row">
-                                            <div className="control-label">레이어</div>
+                                            <div className="control-label">
+                                                {t("layers")}
+                                            </div>
                                             <div className="button-row layer-actions">
-                                                <Tooltip title="글자를 하나 더 넣습니다">
+                                                <Tooltip title={t("addTextTip")}>
                                                     <Button
                                                         size="middle"
                                                         icon={<PlusOutlined />}
@@ -788,10 +874,10 @@ function App() {
                                                         }
                                                         onClick={addText}
                                                     >
-                                                        추가
+                                                        {t("addText")}
                                                     </Button>
                                                 </Tooltip>
-                                                <Tooltip title="선택한 글자를 지웁니다">
+                                                <Tooltip title={t("deleteTextTip")}>
                                                     <Button
                                                         size="middle"
                                                         icon={<DeleteOutlined />}
@@ -817,17 +903,22 @@ function App() {
                                                     <em>
                                                         {layer.text
                                                             .replace(/\s+/g, " ")
-                                                            .trim() || "빈 글자"}
+                                                            .trim() ||
+                                                            t("emptyText")}
                                                     </em>
                                                 </button>
                                             ))}
                                         </div>
-                                        <div className="control-label">스타일</div>
+                                        <div className="control-label">
+                                            {t("style")}
+                                        </div>
                                         <div className="style-grid">
-                                            {TEXT_STYLES.map((style) => (
+                                            {TEXT_STYLES.map((style) => {
+                                                const i18n = STYLE_I18N[style.id];
+                                                return (
                                                 <Tooltip
                                                     key={style.id}
-                                                    title={style.tooltip}
+                                                    title={t(i18n.tip)}
                                                 >
                                                     <button
                                                         type="button"
@@ -851,13 +942,16 @@ function App() {
                                                             Aa
                                                         </span>
                                                         <span className="style-name">
-                                                            {style.label}
+                                                            {t(i18n.label)}
                                                         </span>
                                                     </button>
                                                 </Tooltip>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
-                                        <div className="control-label">타이포</div>
+                                        <div className="control-label">
+                                            {t("typography")}
+                                        </div>
                                         <Select
                                             size="middle"
                                             value={selected.fontFamily}
@@ -871,7 +965,7 @@ function App() {
                                             }))}
                                         />
                                         <NumberField
-                                            addonBefore="크기"
+                                            addonBefore={t("fontSize")}
                                             value={selected.fontSize}
                                             min={8}
                                             max={400}
@@ -884,22 +978,25 @@ function App() {
                                                 [
                                                     [
                                                         "left",
-                                                        "왼쪽 정렬",
+                                                        "alignLeft",
                                                         <AlignLeftOutlined key="left" />,
                                                     ],
                                                     [
                                                         "center",
-                                                        "가운데 정렬",
+                                                        "alignCenter",
                                                         <AlignCenterOutlined key="center" />,
                                                     ],
                                                     [
                                                         "right",
-                                                        "오른쪽 정렬",
+                                                        "alignRight",
                                                         <AlignRightOutlined key="right" />,
                                                     ],
                                                 ] as const
-                                            ).map(([align, label, icon]) => (
-                                                <Tooltip key={align} title={label}>
+                                            ).map(([align, labelKey, icon]) => (
+                                                <Tooltip
+                                                    key={align}
+                                                    title={t(labelKey)}
+                                                >
                                                     <Button
                                                         size="middle"
                                                         type={
@@ -907,7 +1004,7 @@ function App() {
                                                                 ? "primary"
                                                                 : "default"
                                                         }
-                                                        aria-label={label}
+                                                        aria-label={t(labelKey)}
                                                         icon={icon}
                                                         onClick={() =>
                                                             commitText({
@@ -917,7 +1014,7 @@ function App() {
                                                     />
                                                 </Tooltip>
                                             ))}
-                                            <Tooltip title="글자 아래에 그림자를 넣습니다">
+                                            <Tooltip title={t("shadowTip")}>
                                                 <Button
                                                     size="middle"
                                                     type={
@@ -931,20 +1028,20 @@ function App() {
                                                         })
                                                     }
                                                 >
-                                                    그림자
+                                                    {t("shadow")}
                                                 </Button>
                                             </Tooltip>
                                         </div>
                                         <Tooltip
                                             title={
                                                 selected.strokeWidth === 0
-                                                    ? "굵기를 올리면 글자 테두리에 색이 보입니다"
-                                                    : "글자 테두리 굵기"
+                                                    ? t("strokeTipOff")
+                                                    : t("strokeTipOn")
                                             }
                                         >
                                             <div>
                                                 <NumberField
-                                                    addonBefore="외곽선"
+                                                    addonBefore={t("stroke")}
                                                     value={selected.strokeWidth}
                                                     min={0}
                                                     max={32}
@@ -955,10 +1052,10 @@ function App() {
                                             </div>
                                         </Tooltip>
                                         <div className="swatch-row">
-                                            <Tooltip title="글자 색 · 그라데이션 스타일에서는 보조색">
+                                            <Tooltip title={t("fontColorTip")}>
                                                 <Swatch
                                                     type="button"
-                                                    aria-label="글자색"
+                                                    aria-label={t("fontColor")}
                                                     onClick={(event) =>
                                                         openPicker(
                                                             "font",
@@ -973,19 +1070,19 @@ function App() {
                                                                 selected.fontColor,
                                                         }}
                                                     />
-                                                    글자색
+                                                    {t("fontColor")}
                                                 </Swatch>
                                             </Tooltip>
                                             <Tooltip
                                                 title={
                                                     selected.strokeWidth === 0
-                                                        ? "외곽선 굵기를 올리면 테두리 색이 보입니다"
-                                                        : "외곽선 색"
+                                                        ? t("strokeColorTipOff")
+                                                        : t("strokeColorTipOn")
                                                 }
                                             >
                                                 <Swatch
                                                     type="button"
-                                                    aria-label="외곽선 색"
+                                                    aria-label={t("strokeColor")}
                                                     onClick={(event) =>
                                                         openPicker(
                                                             "stroke",
@@ -1000,11 +1097,11 @@ function App() {
                                                                 selected.strokeColor,
                                                         }}
                                                     />
-                                                    외곽선
+                                                    {t("strokeColor")}
                                                 </Swatch>
                                             </Tooltip>
                                         </div>
-                                        <Tooltip title="선택한 글자 문구를 무작위로 바꿉니다">
+                                        <Tooltip title={t("randomPhraseTip")}>
                                             <span className="tooltip-block">
                                                 <Button
                                                     type="default"
@@ -1013,11 +1110,11 @@ function App() {
                                                     icon={<MessageOutlined />}
                                                     onClick={() =>
                                                         commitText({
-                                                            text: randomPhrase(),
+                                                            text: pickPhrase(locale),
                                                         })
                                                     }
                                                 >
-                                                    문구 바꾸기
+                                                    {t("randomPhrase")}
                                                 </Button>
                                             </span>
                                         </Tooltip>
@@ -1026,12 +1123,14 @@ function App() {
 
                                 {panelTab === "background" ? (
                                     <section className="control-group">
-                                        <div className="control-label">배경색</div>
+                                        <div className="control-label">
+                                            {t("backgroundColor")}
+                                        </div>
                                         <div className="swatch-row">
-                                            <Tooltip title="배너 배경 색">
+                                            <Tooltip title={t("backgroundColorTip")}>
                                                 <Swatch
                                                     type="button"
-                                                    aria-label="배경색"
+                                                    aria-label={t("backgroundColor")}
                                                     onClick={(event) =>
                                                         openPicker(
                                                             "bg",
@@ -1046,10 +1145,10 @@ function App() {
                                                                 banner.backgroundColor,
                                                         }}
                                                     />
-                                                    배경색
+                                                    {t("backgroundColor")}
                                                 </Swatch>
                                             </Tooltip>
-                                            <Tooltip title="배경 색을 무작위로 바꿉니다">
+                                            <Tooltip title={t("randomBgTip")}>
                                                 <Button
                                                     size="middle"
                                                     icon={<BgColorsOutlined />}
@@ -1060,35 +1159,39 @@ function App() {
                                                         })
                                                     }
                                                 >
-                                                    랜덤
+                                                    {t("randomBg")}
                                                 </Button>
                                             </Tooltip>
                                         </div>
-                                        <div className="control-label">배경 사진</div>
+                                        <div className="control-label">
+                                            {t("backgroundImage")}
+                                        </div>
                                         <div className="swatch-row">
-                                            <Tooltip title="배경에 사진을 넣습니다">
+                                            <Tooltip title={t("uploadImageTip")}>
                                                 <Button
                                                     size="middle"
-                                                    aria-label="배경 사진"
+                                                    aria-label={t("backgroundImage")}
                                                     icon={<PictureOutlined />}
                                                     onClick={() =>
                                                         imageRef.current?.click()
                                                     }
                                                 >
-                                                    사진 올리기
+                                                    {t("uploadImage")}
                                                 </Button>
                                             </Tooltip>
                                             {banner.imageUrl ? (
-                                                <Tooltip title="배경 사진을 지웁니다">
+                                                <Tooltip title={t("removeImageTip")}>
                                                     <Button
                                                         size="middle"
-                                                        aria-label="배경 사진 삭제"
+                                                        aria-label={t(
+                                                            "removeImageAria",
+                                                        )}
                                                         icon={<DeleteOutlined />}
                                                         onClick={() =>
                                                             commit({ imageUrl: "" })
                                                         }
                                                     >
-                                                        삭제
+                                                        {t("removeImage")}
                                                     </Button>
                                                 </Tooltip>
                                             ) : null}
@@ -1103,8 +1206,7 @@ function App() {
                                             />
                                         ) : (
                                             <p className="control-note">
-                                                사진을 올리면 배경색 위에 덮어
-                                                표시됩니다.
+                                                {t("imageNote")}
                                             </p>
                                         )}
                                         <input
@@ -1218,7 +1320,7 @@ function App() {
                                                         suppressContentEditableWarning
                                                         spellCheck={false}
                                                         role="textbox"
-                                                        aria-label="배너 글자"
+                                                        aria-label={t("bannerTextAria")}
                                                         onFocus={() => {
                                                             setPanelTab("text");
                                                             selectText(layer.id);
@@ -1246,25 +1348,88 @@ function App() {
                                         className="text-grip"
                                         size="small"
                                         icon={<DragOutlined />}
-                                        aria-label="글자 이동"
+                                        aria-label={t("moveTextAria")}
                                         style={{
                                             top: Math.max(4, gripPos.top),
                                             left: Math.max(4, gripPos.left),
                                         }}
                                         onPointerDown={onGripDown}
                                     >
-                                        이동
+                                        {t("moveText")}
                                     </Button>
                                 ) : null}
                             </div>
                         </div>
-                        <p className="edit-hint">
-                            글자를 추가하고, 스타일을 고른 뒤 드래그로 자리를
-                            옮기세요.
-                        </p>
+                        <p className="edit-hint">{t("editHint")}</p>
                     </main>
                 </div>
             </div>
+            <section className="seo-panel" aria-label={t("seoNav")}>
+                <div className="seo-inner">
+                    <header className="seo-header">
+                        <h2>{t("seoTitle")}</h2>
+                        <p>{t("seoLead")}</p>
+                    </header>
+
+                    <div className="seo-grid">
+                        <article className="seo-card">
+                            <h3>{t("howTitle")}</h3>
+                            <ol className="seo-steps">
+                                <li>{t("how1")}</li>
+                                <li>{t("how2")}</li>
+                                <li>{t("how3")}</li>
+                                <li>{t("how4")}</li>
+                            </ol>
+                        </article>
+                        <article className="seo-card">
+                            <h3>{t("sizesTitle")}</h3>
+                            <ul className="seo-list">
+                                <li>
+                                    <a
+                                        href={`${seoLandingBase(locale)}/youtube-thumbnail/`}
+                                    >
+                                        {t("sizeYoutube")}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href={`${seoLandingBase(locale)}/shorts-thumbnail/`}
+                                    >
+                                        {t("sizeShorts")}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href={`${seoLandingBase(locale)}/channel-banner/`}
+                                    >
+                                        {t("sizeChannel")}
+                                    </a>
+                                </li>
+                                <li>{t("sizeVideo")}</li>
+                            </ul>
+                        </article>
+                    </div>
+
+                    <div className="seo-faq">
+                        <h3>{t("faqTitle")}</h3>
+                        {(
+                            [
+                                ["faq1q", "faq1a"],
+                                ["faq2q", "faq2a"],
+                                ["faq3q", "faq3a"],
+                                ["faq4q", "faq4a"],
+                                ["faq5q", "faq5a"],
+                                ["faq6q", "faq6a"],
+                            ] as const
+                        ).map(([q, a]) => (
+                            <details key={q}>
+                                <summary>{t(q)}</summary>
+                                <p>{t(a)}</p>
+                            </details>
+                        ))}
+                    </div>
+                </div>
+            </section>
             <Analytics />
         </ConfigProvider>
     );

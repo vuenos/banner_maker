@@ -1,0 +1,713 @@
+export type Locale = "ko" | "en" | "ja" | "es";
+
+export const LOCALES: Locale[] = ["ko", "en", "ja", "es"];
+
+export const LOCALE_LABELS: Record<Locale, string> = {
+    ko: "한국어",
+    en: "English",
+    ja: "日本語",
+    es: "Español",
+};
+
+export const LOCALE_SHORT: Record<Locale, string> = {
+    ko: "KO",
+    en: "EN",
+    ja: "JA",
+    es: "ES",
+};
+
+export const LOCALE_STORAGE_KEY = "banner-maker-locale";
+
+function isLocale(value: string | null | undefined): value is Locale {
+    return value === "ko" || value === "en" || value === "ja" || value === "es";
+}
+
+/** Primary browser language → matching locale, else English. */
+export function localeFromSystem(): Locale {
+    try {
+        const primary =
+            navigator.language ||
+            (navigator.languages && navigator.languages[0]) ||
+            "";
+        const code = String(primary).toLowerCase().split("-")[0];
+        if (code === "ko") return "ko";
+        if (code === "ja") return "ja";
+        if (code === "es") return "es";
+        if (code === "en") return "en";
+    } catch {
+        /* ignore */
+    }
+    return "en";
+}
+
+export function readLocale(): Locale {
+    try {
+        const saved = localStorage.getItem(LOCALE_STORAGE_KEY);
+        if (isLocale(saved)) return saved;
+    } catch {
+        /* ignore */
+    }
+    return localeFromSystem();
+}
+
+export function applyLocale(locale: Locale) {
+    document.documentElement.lang = locale;
+}
+
+type Dict = Record<string, string>;
+
+const ko: Dict = {
+    docTitle: "유튜브 썸네일 만들기 | 무료 배너·숏폼 제작 - Thumbnail Maker",
+    docDescription:
+        "유튜브 썸네일, 숏폼, 채널 배너를 브라우저에서 바로 만듭니다. 글자·색·배경 사진을 넣고 PNG로 저장하세요. 가입 없이 무료.",
+    brandTitle: "유튜브 썸네일 만들기",
+    brandSubtitle: "가입 없이 무료 · Thumbnail Maker",
+    themeToDark: "다크 테마",
+    themeToLight: "라이트 테마",
+    themeToDarkAria: "다크 테마로 전환",
+    themeToLightAria: "라이트 테마로 전환",
+    langSwitchAria: "언어 변경",
+    undo: "실행 취소",
+    redo: "다시 실행",
+    reset: "초기화",
+    resetTooltip: "처음 상태로 되돌리기",
+    resetConfirmTitle: "초기화할까요?",
+    resetConfirmBody: "크기·글자·배경·히스토리가 처음 상태로 돌아갑니다.",
+    resetOk: "초기화",
+    resetCancel: "취소",
+    contact: "Contact",
+    saveImage: "이미지 저장",
+    exportError: "이미지를 만들지 못했습니다.",
+    panelNav: "편집 기능",
+    tabCanvas: "크기",
+    tabText: "글자",
+    tabBackground: "배경",
+    saveSize: "저장 크기",
+    width: "가로",
+    height: "세로",
+    channelGuideNote:
+        "점선 안이 모든 기기에서 보이는 영역입니다. 점선은 저장되지 않습니다.",
+    previewZoom: "화면 배율",
+    zoomFit: "맞추기",
+    zoomFitTip: "미리보기만 화면에 맞춤",
+    zoom50: "50%",
+    zoom50Tip: "미리보기를 절반 크기로",
+    zoom100: "100%",
+    zoom100Tip: "저장 픽셀과 같은 크기",
+    layers: "레이어",
+    addText: "추가",
+    addTextTip: "글자를 하나 더 넣습니다",
+    deleteTextTip: "선택한 글자를 지웁니다",
+    emptyText: "빈 글자",
+    newText: "새 글자",
+    style: "스타일",
+    typography: "타이포",
+    fontSize: "크기",
+    alignLeft: "왼쪽 정렬",
+    alignCenter: "가운데 정렬",
+    alignRight: "오른쪽 정렬",
+    shadow: "그림자",
+    shadowTip: "글자 아래에 그림자를 넣습니다",
+    strokeTipOff: "굵기를 올리면 글자 테두리에 색이 보입니다",
+    strokeTipOn: "글자 테두리 굵기",
+    stroke: "외곽선",
+    fontColorTip: "글자 색 · 그라데이션 스타일에서는 보조색",
+    fontColor: "글자색",
+    strokeColorTipOff: "외곽선 굵기를 올리면 테두리 색이 보입니다",
+    strokeColorTipOn: "외곽선 색",
+    strokeColor: "외곽선",
+    randomPhraseTip: "선택한 글자 문구를 무작위로 바꿉니다",
+    randomPhrase: "문구 바꾸기",
+    backgroundColor: "배경색",
+    backgroundColorTip: "배너 배경 색",
+    randomBgTip: "배경 색을 무작위로 바꿉니다",
+    randomBg: "랜덤",
+    backgroundImage: "배경 사진",
+    uploadImageTip: "배경에 사진을 넣습니다",
+    uploadImage: "사진 올리기",
+    removeImageTip: "배경 사진을 지웁니다",
+    removeImage: "삭제",
+    removeImageAria: "배경 사진 삭제",
+    imageNote: "사진을 올리면 배경색 위에 덮어 표시됩니다.",
+    bannerTextAria: "배너 글자",
+    moveText: "이동",
+    moveTextAria: "글자 이동",
+    editHint: "글자를 추가하고, 스타일을 고른 뒤 드래그로 자리를 옮기세요.",
+    seoNav: "이용 안내",
+    seoTitle: "무료 유튜브 썸네일·배너 제작 도구",
+    seoLead:
+        "Thumbnail Maker로 유튜브 영상 썸네일, 숏폼(쇼츠)·틱톡 썸네일, 채널 배너를 브라우저에서 바로 만들고 PNG로 저장하세요. 가입과 설치가 필요 없습니다.",
+    howTitle: "이렇게 만듭니다",
+    how1: "저장 크기에서 유튜브·숏폼·채널 배너 중 고릅니다.",
+    how2: "글자 탭에서 문구·스타일·글꼴을 넣습니다.",
+    how3: "배경색이나 사진을 맞춘 뒤 드래그로 배치합니다.",
+    how4: "이미지 저장으로 PNG를 내려받습니다.",
+    sizesTitle: "지원 크기",
+    sizeYoutube: "유튜브 썸네일 1280×720",
+    sizeShorts: "숏폼 썸네일 1080×1920",
+    sizeChannel: "채널 배너 2560×1440",
+    sizeVideo: "유튜브 영상 16:9 · 1920×1080",
+    faqTitle: "자주 묻는 질문",
+    faq1q: "유튜브 썸네일 권장 크기는 얼마인가요?",
+    faq1a: "유튜브는 1280×720(16:9)을 권장합니다. 이 사이트 프리셋에서 바로 선택할 수 있습니다.",
+    faq2q: "정말 무료인가요? 가입이 필요한가요?",
+    faq2a: "완전 무료이며 가입 없이 브라우저에서 편집하고 PNG로 저장할 수 있습니다.",
+    faq3q: "숏폼·쇼츠 썸네일도 만들 수 있나요?",
+    faq3a: "1080×1920 세로 프리셋으로 숏폼·쇼츠·틱톡·릴스용 이미지를 만들 수 있습니다.",
+    faq4q: "채널 배너 안전 영역이 뭔가요?",
+    faq4a: "채널 배너(2560×1440)에서 모든 기기에 보이는 1546×423 영역입니다. 점선으로 표시되며 저장 파일에는 들어가지 않습니다.",
+    faq5q: "글자를 여러 개 넣을 수 있나요?",
+    faq5a: "여러 글자 레이어를 추가하고, 예능 타이틀·스펙트럼·블러시 같은 스타일 프리셋을 적용할 수 있습니다.",
+    faq6q: "작업 내용이 사라지나요?",
+    faq6a: "편집 중인 내용은 브라우저에 자동 저장됩니다. 초기화 버튼을 누르면 처음 상태로 돌아갑니다.",
+    stylePlain: "기본",
+    stylePlainTip: "단색 글자",
+    styleVariety: "예능 타이틀",
+    styleVarietyTip: "두꺼운 검정 외곽선과 딱딱한 그림자 · 예능 썸네일 느낌",
+    styleSpectrum: "스펙트럼",
+    styleSpectrumTip: "청록→분홍 가로 그라데이션과 흰 외곽선",
+    styleBlush: "블러시",
+    styleBlushTip: "흰→분홍 세로 그라데이션과 얇은 검정 외곽선",
+    preset169: "유튜브 영상",
+    preset169Tip: "가로 영상 16:9 · 1920×1080",
+    preset916: "숏폼 영상",
+    preset916Tip: "세로 영상 9:16 · 쇼츠·틱톡·릴스 · 1080×1920",
+    presetYoutube: "유튜브 썸네일",
+    presetYoutubeTip: "영상 목록에 보이는 미리보기 이미지 · 1280×720",
+    presetChannel: "유튜브 채널 배너",
+    presetChannelTip: "채널 상단 배너 · 2560×1440 · 점선은 안전 영역",
+};
+
+const en: Dict = {
+    docTitle: "YouTube Thumbnail Maker | Free Banner & Shorts - Thumbnail Maker",
+    docDescription:
+        "Create YouTube thumbnails, Shorts, and channel banners in your browser. Add text, colors, and photos, then save as PNG. Free, no sign-up.",
+    brandTitle: "YouTube Thumbnail Maker",
+    brandSubtitle: "Free · no sign-up · Thumbnail Maker",
+    themeToDark: "Dark theme",
+    themeToLight: "Light theme",
+    themeToDarkAria: "Switch to dark theme",
+    themeToLightAria: "Switch to light theme",
+    langSwitchAria: "Change language",
+    undo: "Undo",
+    redo: "Redo",
+    reset: "Reset",
+    resetTooltip: "Reset to the initial state",
+    resetConfirmTitle: "Reset everything?",
+    resetConfirmBody:
+        "Size, text, background, and history will return to the initial state.",
+    resetOk: "Reset",
+    resetCancel: "Cancel",
+    contact: "Contact",
+    saveImage: "Save image",
+    exportError: "Could not create the image.",
+    panelNav: "Editing tools",
+    tabCanvas: "Size",
+    tabText: "Text",
+    tabBackground: "Background",
+    saveSize: "Export size",
+    width: "Width",
+    height: "Height",
+    channelGuideNote:
+        "Everything inside the dashed box stays visible on all devices. The guide is not saved in the file.",
+    previewZoom: "Preview zoom",
+    zoomFit: "Fit",
+    zoomFitTip: "Fit the preview to the screen",
+    zoom50: "50%",
+    zoom50Tip: "Preview at half size",
+    zoom100: "100%",
+    zoom100Tip: "Same size as export pixels",
+    layers: "Layers",
+    addText: "Add",
+    addTextTip: "Add another text layer",
+    deleteTextTip: "Delete the selected text",
+    emptyText: "Empty text",
+    newText: "New text",
+    style: "Style",
+    typography: "Typography",
+    fontSize: "Size",
+    alignLeft: "Align left",
+    alignCenter: "Align center",
+    alignRight: "Align right",
+    shadow: "Shadow",
+    shadowTip: "Add a drop shadow under the text",
+    strokeTipOff: "Increase width to show a text outline",
+    strokeTipOn: "Outline width",
+    stroke: "Stroke",
+    fontColorTip: "Text color · accent for gradient styles",
+    fontColor: "Text color",
+    strokeColorTipOff: "Increase stroke width to see outline color",
+    strokeColorTipOn: "Outline color",
+    strokeColor: "Outline",
+    randomPhraseTip: "Replace the selected text with a random phrase",
+    randomPhrase: "Random text",
+    backgroundColor: "Background color",
+    backgroundColorTip: "Banner background color",
+    randomBgTip: "Pick a random background color",
+    randomBg: "Random",
+    backgroundImage: "Background image",
+    uploadImageTip: "Add a background photo",
+    uploadImage: "Upload photo",
+    removeImageTip: "Remove the background photo",
+    removeImage: "Remove",
+    removeImageAria: "Remove background photo",
+    imageNote: "Uploaded photos cover the background color.",
+    bannerTextAria: "Banner text",
+    moveText: "Move",
+    moveTextAria: "Move text",
+    editHint: "Add text, pick a style, then drag to place it.",
+    seoNav: "Guide",
+    seoTitle: "Free YouTube thumbnail & banner maker",
+    seoLead:
+        "Make YouTube thumbnails, Shorts/TikTok covers, and channel banners in your browser with Thumbnail Maker. Save as PNG—no sign-up or install.",
+    howTitle: "How it works",
+    how1: "Pick YouTube, Shorts, or channel banner size.",
+    how2: "Add copy, styles, and fonts in the Text tab.",
+    how3: "Set background color or photo, then drag to place.",
+    how4: "Save image to download a PNG.",
+    sizesTitle: "Supported sizes",
+    sizeYoutube: "YouTube thumbnail 1280×720",
+    sizeShorts: "Shorts thumbnail 1080×1920",
+    sizeChannel: "Channel banner 2560×1440",
+    sizeVideo: "YouTube video 16:9 · 1920×1080",
+    faqTitle: "FAQ",
+    faq1q: "What size should a YouTube thumbnail be?",
+    faq1a: "YouTube recommends 1280×720 (16:9). You can pick that preset here.",
+    faq2q: "Is it really free? Do I need an account?",
+    faq2a: "Yes—completely free. Edit in the browser and save PNG with no sign-up.",
+    faq3q: "Can I make Shorts thumbnails?",
+    faq3a: "Use the 1080×1920 vertical preset for Shorts, TikTok, and Reels.",
+    faq4q: "What is the channel banner safe area?",
+    faq4a: "On a 2560×1440 banner, about 1546×423 stays visible on all devices. The dashed guide is not saved.",
+    faq5q: "Can I add multiple text layers?",
+    faq5a: "Yes. Add layers and apply styles like Variety, Spectrum, or Blush.",
+    faq6q: "Will my work disappear?",
+    faq6a: "Your draft is saved in the browser. Reset restores the initial state.",
+    stylePlain: "Basic",
+    stylePlainTip: "Solid color text",
+    styleVariety: "Variety title",
+    styleVarietyTip: "Thick black outline and hard shadow · variety-show look",
+    styleSpectrum: "Spectrum",
+    styleSpectrumTip: "Cyan-to-pink horizontal gradient with white outline",
+    styleBlush: "Blush",
+    styleBlushTip: "White-to-pink vertical gradient with thin black outline",
+    preset169: "YouTube video",
+    preset169Tip: "Landscape 16:9 · 1920×1080",
+    preset916: "Shorts video",
+    preset916Tip: "Vertical 9:16 · Shorts · TikTok · Reels · 1080×1920",
+    presetYoutube: "YouTube thumbnail",
+    presetYoutubeTip: "Preview image in video lists · 1280×720",
+    presetChannel: "YouTube channel banner",
+    presetChannelTip: "Channel header · 2560×1440 · dashed safe area",
+};
+
+const ja: Dict = {
+    docTitle: "YouTubeサムネイル作成 | 無料バナー・ショート - Thumbnail Maker",
+    docDescription:
+        "ブラウザでYouTubeサムネイル、ショート、チャンネルバナーを作成。文字・色・写真を入れてPNG保存。無料・登録不要。",
+    brandTitle: "YouTubeサムネイル作成",
+    brandSubtitle: "無料・登録不要 · Thumbnail Maker",
+    themeToDark: "ダークテーマ",
+    themeToLight: "ライトテーマ",
+    themeToDarkAria: "ダークテーマに切り替え",
+    themeToLightAria: "ライトテーマに切り替え",
+    langSwitchAria: "言語を変更",
+    undo: "元に戻す",
+    redo: "やり直す",
+    reset: "リセット",
+    resetTooltip: "初期状態に戻す",
+    resetConfirmTitle: "すべてリセットしますか？",
+    resetConfirmBody:
+        "サイズ・文字・背景・履歴が初期状態に戻ります。",
+    resetOk: "リセット",
+    resetCancel: "キャンセル",
+    contact: "Contact",
+    saveImage: "画像を保存",
+    exportError: "画像を作成できませんでした。",
+    panelNav: "編集ツール",
+    tabCanvas: "サイズ",
+    tabText: "文字",
+    tabBackground: "背景",
+    saveSize: "書き出しサイズ",
+    width: "幅",
+    height: "高さ",
+    channelGuideNote:
+        "破線の内側がすべての端末で見える領域です。破線は保存されません。",
+    previewZoom: "プレビュー倍率",
+    zoomFit: "合わせる",
+    zoomFitTip: "プレビューを画面に合わせる",
+    zoom50: "50%",
+    zoom50Tip: "半分のサイズで表示",
+    zoom100: "100%",
+    zoom100Tip: "書き出しピクセルと同じサイズ",
+    layers: "レイヤー",
+    addText: "追加",
+    addTextTip: "文字レイヤーを追加",
+    deleteTextTip: "選択中の文字を削除",
+    emptyText: "空の文字",
+    newText: "新しい文字",
+    style: "スタイル",
+    typography: "タイポ",
+    fontSize: "サイズ",
+    alignLeft: "左揃え",
+    alignCenter: "中央揃え",
+    alignRight: "右揃え",
+    shadow: "影",
+    shadowTip: "文字の下にドロップシャドウを追加",
+    strokeTipOff: "太さを上げると文字の輪郭色が見えます",
+    strokeTipOn: "輪郭の太さ",
+    stroke: "輪郭",
+    fontColorTip: "文字色 · グラデーションではアクセント色",
+    fontColor: "文字色",
+    strokeColorTipOff: "輪郭の太さを上げると輪郭色が見えます",
+    strokeColorTipOn: "輪郭色",
+    strokeColor: "輪郭",
+    randomPhraseTip: "選択中の文言をランダムに変更",
+    randomPhrase: "文言を変更",
+    backgroundColor: "背景色",
+    backgroundColorTip: "バナーの背景色",
+    randomBgTip: "背景色をランダムに変更",
+    randomBg: "ランダム",
+    backgroundImage: "背景画像",
+    uploadImageTip: "背景に写真を追加",
+    uploadImage: "写真をアップロード",
+    removeImageTip: "背景写真を削除",
+    removeImage: "削除",
+    removeImageAria: "背景写真を削除",
+    imageNote: "写真をアップロードすると背景色の上に重なります。",
+    bannerTextAria: "バナー文字",
+    moveText: "移動",
+    moveTextAria: "文字を移動",
+    editHint: "文字を追加し、スタイルを選んでからドラッグで配置します。",
+    seoNav: "ご案内",
+    seoTitle: "無料のYouTubeサムネイル・バナー作成ツール",
+    seoLead:
+        "Thumbnail MakerでYouTubeサムネイル、ショート/TikTok用カバー、チャンネルバナーをブラウザで作成し、PNGで保存。登録・インストール不要。",
+    howTitle: "使い方",
+    how1: "書き出しサイズでYouTube・ショート・チャンネルバナーを選びます。",
+    how2: "文字タブで文言・スタイル・フォントを設定します。",
+    how3: "背景色または写真を決め、ドラッグで配置します。",
+    how4: "画像を保存でPNGをダウンロードします。",
+    sizesTitle: "対応サイズ",
+    sizeYoutube: "YouTubeサムネイル 1280×720",
+    sizeShorts: "ショートサムネイル 1080×1920",
+    sizeChannel: "チャンネルバナー 2560×1440",
+    sizeVideo: "YouTube動画 16:9 · 1920×1080",
+    faqTitle: "よくある質問",
+    faq1q: "YouTubeサムネイルの推奨サイズは？",
+    faq1a: "YouTubeは1280×720（16:9）を推奨しています。このサイトのプリセットで選べます。",
+    faq2q: "本当に無料？アカウントは必要？",
+    faq2a: "完全無料です。ブラウザで編集し、登録なしでPNG保存できます。",
+    faq3q: "ショート用サムネイルも作れますか？",
+    faq3a: "1080×1920の縦プリセットでショート・TikTok・Reels用に使えます。",
+    faq4q: "チャンネルバナーのセーフエリアとは？",
+    faq4a: "2560×1440バナーのうち、全端末で見える約1546×423の領域です。破線ガイドは保存されません。",
+    faq5q: "文字を複数追加できますか？",
+    faq5a: "はい。レイヤーを追加し、バラエティ・スペクトラム・ブラッシュなどのスタイルを適用できます。",
+    faq6q: "作業内容は消えますか？",
+    faq6a: "下書きはブラウザに保存されます。リセットで初期状態に戻ります。",
+    stylePlain: "ベーシック",
+    stylePlainTip: "単色の文字",
+    styleVariety: "バラエティタイトル",
+    styleVarietyTip: "太い黒輪郭と硬い影 · バラエティ番組風",
+    styleSpectrum: "スペクトラム",
+    styleSpectrumTip: "シアン→ピンクの横グラデーションと白輪郭",
+    styleBlush: "ブラッシュ",
+    styleBlushTip: "白→ピンクの縦グラデーションと細い黒輪郭",
+    preset169: "YouTube動画",
+    preset169Tip: "横動画 16:9 · 1920×1080",
+    preset916: "ショート動画",
+    preset916Tip: "縦動画 9:16 · ショート · TikTok · Reels · 1080×1920",
+    presetYoutube: "YouTubeサムネイル",
+    presetYoutubeTip: "一覧のプレビュー画像 · 1280×720",
+    presetChannel: "YouTubeチャンネルバナー",
+    presetChannelTip: "チャンネル上部バナー · 2560×1440 · 破線はセーフエリア",
+};
+
+const es: Dict = {
+    docTitle:
+        "Creador de miniaturas de YouTube | Banner y Shorts gratis - Thumbnail Maker",
+    docDescription:
+        "Crea miniaturas de YouTube, Shorts y banners de canal en el navegador. Añade texto, colores y fotos, y guarda en PNG. Gratis, sin registro.",
+    brandTitle: "Creador de miniaturas de YouTube",
+    brandSubtitle: "Gratis · sin registro · Thumbnail Maker",
+    themeToDark: "Tema oscuro",
+    themeToLight: "Tema claro",
+    themeToDarkAria: "Cambiar a tema oscuro",
+    themeToLightAria: "Cambiar a tema claro",
+    langSwitchAria: "Cambiar idioma",
+    undo: "Deshacer",
+    redo: "Rehacer",
+    reset: "Restablecer",
+    resetTooltip: "Volver al estado inicial",
+    resetConfirmTitle: "¿Restablecer todo?",
+    resetConfirmBody:
+        "El tamaño, el texto, el fondo y el historial volverán al estado inicial.",
+    resetOk: "Restablecer",
+    resetCancel: "Cancelar",
+    contact: "Contact",
+    saveImage: "Guardar imagen",
+    exportError: "No se pudo crear la imagen.",
+    panelNav: "Herramientas de edición",
+    tabCanvas: "Tamaño",
+    tabText: "Texto",
+    tabBackground: "Fondo",
+    saveSize: "Tamaño de exportación",
+    width: "Ancho",
+    height: "Alto",
+    channelGuideNote:
+        "Todo dentro del recuadro de puntos se ve en todos los dispositivos. La guía no se guarda en el archivo.",
+    previewZoom: "Zoom de vista previa",
+    zoomFit: "Ajustar",
+    zoomFitTip: "Ajustar la vista previa a la pantalla",
+    zoom50: "50%",
+    zoom50Tip: "Vista previa a la mitad",
+    zoom100: "100%",
+    zoom100Tip: "Mismo tamaño que los píxeles de exportación",
+    layers: "Capas",
+    addText: "Añadir",
+    addTextTip: "Añadir otra capa de texto",
+    deleteTextTip: "Eliminar el texto seleccionado",
+    emptyText: "Texto vacío",
+    newText: "Texto nuevo",
+    style: "Estilo",
+    typography: "Tipografía",
+    fontSize: "Tamaño",
+    alignLeft: "Alinear a la izquierda",
+    alignCenter: "Centrar",
+    alignRight: "Alinear a la derecha",
+    shadow: "Sombra",
+    shadowTip: "Añadir sombra bajo el texto",
+    strokeTipOff: "Aumenta el grosor para ver el contorno",
+    strokeTipOn: "Grosor del contorno",
+    stroke: "Contorno",
+    fontColorTip: "Color del texto · acento en estilos con degradado",
+    fontColor: "Color del texto",
+    strokeColorTipOff: "Aumenta el grosor para ver el color del contorno",
+    strokeColorTipOn: "Color del contorno",
+    strokeColor: "Contorno",
+    randomPhraseTip: "Sustituir el texto seleccionado por una frase aleatoria",
+    randomPhrase: "Texto aleatorio",
+    backgroundColor: "Color de fondo",
+    backgroundColorTip: "Color de fondo del banner",
+    randomBgTip: "Elegir un color de fondo al azar",
+    randomBg: "Aleatorio",
+    backgroundImage: "Imagen de fondo",
+    uploadImageTip: "Añadir una foto de fondo",
+    uploadImage: "Subir foto",
+    removeImageTip: "Quitar la foto de fondo",
+    removeImage: "Quitar",
+    removeImageAria: "Quitar foto de fondo",
+    imageNote: "Las fotos subidas cubren el color de fondo.",
+    bannerTextAria: "Texto del banner",
+    moveText: "Mover",
+    moveTextAria: "Mover texto",
+    editHint: "Añade texto, elige un estilo y arrástralo para colocarlo.",
+    seoNav: "Guía",
+    seoTitle: "Creador gratis de miniaturas y banners de YouTube",
+    seoLead:
+        "Crea miniaturas de YouTube, portadas para Shorts/TikTok y banners de canal en el navegador con Thumbnail Maker. Guarda en PNG—sin registro ni instalación.",
+    howTitle: "Cómo funciona",
+    how1: "Elige tamaño de YouTube, Shorts o banner de canal.",
+    how2: "Añade texto, estilos y fuentes en la pestaña Texto.",
+    how3: "Define color o foto de fondo y arrastra para colocar.",
+    how4: "Guarda la imagen para descargar un PNG.",
+    sizesTitle: "Tamaños compatibles",
+    sizeYoutube: "Miniatura de YouTube 1280×720",
+    sizeShorts: "Miniatura de Shorts 1080×1920",
+    sizeChannel: "Banner de canal 2560×1440",
+    sizeVideo: "Vídeo de YouTube 16:9 · 1920×1080",
+    faqTitle: "Preguntas frecuentes",
+    faq1q: "¿Qué tamaño debe tener una miniatura de YouTube?",
+    faq1a: "YouTube recomienda 1280×720 (16:9). Puedes elegir ese ajuste aquí.",
+    faq2q: "¿Es realmente gratis? ¿Necesito una cuenta?",
+    faq2a: "Sí—totalmente gratis. Edita en el navegador y guarda PNG sin registro.",
+    faq3q: "¿Puedo hacer miniaturas para Shorts?",
+    faq3a: "Usa el preset vertical 1080×1920 para Shorts, TikTok y Reels.",
+    faq4q: "¿Qué es el área segura del banner de canal?",
+    faq4a: "En un banner 2560×1440, unos 1546×423 se ven en todos los dispositivos. La guía de puntos no se guarda.",
+    faq5q: "¿Puedo añadir varias capas de texto?",
+    faq5a: "Sí. Añade capas y aplica estilos como Variety, Spectrum o Blush.",
+    faq6q: "¿Desaparecerá mi trabajo?",
+    faq6a: "El borrador se guarda en el navegador. Restablecer vuelve al estado inicial.",
+    stylePlain: "Básico",
+    stylePlainTip: "Texto de color sólido",
+    styleVariety: "Título variety",
+    styleVarietyTip: "Contorno negro grueso y sombra dura · look de programa",
+    styleSpectrum: "Spectrum",
+    styleSpectrumTip: "Degradado horizontal cian→rosa con contorno blanco",
+    styleBlush: "Blush",
+    styleBlushTip: "Degradado vertical blanco→rosa con contorno negro fino",
+    preset169: "Vídeo de YouTube",
+    preset169Tip: "Horizontal 16:9 · 1920×1080",
+    preset916: "Vídeo Shorts",
+    preset916Tip: "Vertical 9:16 · Shorts · TikTok · Reels · 1080×1920",
+    presetYoutube: "Miniatura de YouTube",
+    presetYoutubeTip: "Imagen de vista previa en listas · 1280×720",
+    presetChannel: "Banner de canal de YouTube",
+    presetChannelTip: "Cabecera del canal · 2560×1440 · área segura a puntos",
+};
+
+const dictionaries: Record<Locale, Dict> = { ko, en, ja, es };
+
+export function translate(locale: Locale, key: string): string {
+    return dictionaries[locale][key] ?? dictionaries.en[key] ?? key;
+}
+
+export const STYLE_I18N: Record<
+    string,
+    { label: string; tip: string }
+> = {
+    plain: { label: "stylePlain", tip: "stylePlainTip" },
+    variety: { label: "styleVariety", tip: "styleVarietyTip" },
+    spectrum: { label: "styleSpectrum", tip: "styleSpectrumTip" },
+    blush: { label: "styleBlush", tip: "styleBlushTip" },
+};
+
+export const PRESET_I18N: Record<
+    string,
+    { label: string; tip: string }
+> = {
+    "16:9": { label: "preset169", tip: "preset169Tip" },
+    "9:16": { label: "preset916", tip: "preset916Tip" },
+    youtube: { label: "presetYoutube", tip: "presetYoutubeTip" },
+    channel: { label: "presetChannel", tip: "presetChannelTip" },
+};
+
+export const PHRASES_BY_LOCALE: Record<Locale, string[]> = {
+    ko: [
+        "독도는 우리땅",
+        "당신이 포기할 때, 나는 시작한다.",
+        "준비하지 않은 자는 기회가 와도 소용없다",
+        "쓴 맛을 모르는 사람은 단 맛도 모른다.",
+        "솔직히 내 사랑, 내 알 바 아니오.",
+        "당신의 눈동자에 건배.",
+        "포스가 함께하길.",
+        "내일은 내일의 태양이 뜰 거야!",
+        "친구는 가까이, 허나 적은 더 가까이.",
+        "기회는 준비된 자에게 온다.",
+        "지금 이 순간을 놓치지 마세요.",
+        "만들어라. 올려라. 성장하라.",
+        "다음 썸네일은 여기서 시작.",
+        "한 줄로 시선을 사로잡으세요.",
+        "클릭하고 싶은 썸네일을 만드세요.",
+        "무료로, 바로, PNG로.",
+    ],
+    en: [
+        "Of the People, By the People, For the People",
+        "I never dreamed about success, I worked for it.",
+        "No pain no gain.",
+        "I'll be back",
+        "Early bird catches the worm.",
+        "Frankly, my dear, I don't give a damn.",
+        "Here's looking at you, kid.",
+        "May the Force be with you.",
+        "After all, tomorrow is another day!",
+        "Keep your friends close, but your enemies closer.",
+        "The die is cast.",
+        "Life is unfair, get used to it.",
+        "Stay hungry, stay foolish",
+        "Make it count.",
+        "Create. Upload. Grow.",
+        "Your next thumbnail starts here.",
+    ],
+    ja: [
+        "人々の、人々による、人々のための",
+        "成功を夢見なかった。そのために働いた。",
+        "痛みなくして得るものなし",
+        "また戻ってくる",
+        "早起きは三文の得",
+        "フランクに言えば、どうでもいい。",
+        "君の瞳に乾杯",
+        "フォースと共にあらんことを",
+        "明日は明日の風が吹く",
+        "友は近く、敵はもっと近くに",
+        "賽は投げられた",
+        "人生は不公平だ。慣れろ。",
+        "飢えてあれ、愚かであれ",
+        "今を大切に。",
+        "作る。上げる。伸びる。",
+        "次のサムネはここから。",
+    ],
+    es: [
+        "Del pueblo, por el pueblo, para el pueblo",
+        "Nunca soñé con el éxito: trabajé por él.",
+        "Sin dolor no hay ganancia.",
+        "Volveré",
+        "A quien madruga, Dios le ayuda",
+        "Francamente, querida, me importa un bledo.",
+        "Brindo por tus ojos",
+        "Que la Fuerza te acompañe",
+        "¡Mañana será otro día!",
+        "Mantén cerca a tus amigos, pero más a tus enemigos.",
+        "La suerte está echada.",
+        "La vida es injusta: acostúmbrate.",
+        "Mantente hambriento, mantente loco",
+        "Haz que cuente.",
+        "Crea. Sube. Crece.",
+        "Tu próxima miniatura empieza aquí.",
+    ],
+};
+
+const LEGACY_STOCK_TEXTS = new Set([
+    "Sample Text",
+    "새 글자",
+    "New text",
+    "新しい文字",
+    "Texto nuevo",
+    "빈 글자",
+    "Empty text",
+    "空の文字",
+    "Texto vacío",
+    // Older mixed KO/EN phrase bank leftovers
+    "Of the People, By the People, For the People",
+    "I never dreamed about success, I worked for it.",
+    "No pain no gain.",
+    "I'll be back",
+    "Early bird catches the worm.",
+    "솔직히 내 사랑, 내 알 바 아니오.\n(Frankly, my dear, I don't give a damn.)",
+    "당신의 눈동자에 건배.\n(Here's looking at you, kid.)",
+    "포스가 함께하길.\n(May the Force be with you.)",
+    "내일은 내일의 태양이 뜰 거야!\n(After all, tomorrow is another day!)",
+    "친구는 가까이, 허나 적은 더 가까이.\n(Keep your friends close, but your enemies closer.)",
+    "The die is cast. – Julius caesar",
+    "Life is unfair, get used to it. – Bill Gates",
+    "Stay hungry, stay foolish",
+]);
+
+function stockPhraseIndex(text: string): number | null {
+    for (const locale of LOCALES) {
+        const index = PHRASES_BY_LOCALE[locale].indexOf(text);
+        if (index >= 0) return index;
+    }
+    return null;
+}
+
+export function pickPhrase(locale: Locale): string {
+    const phrases = PHRASES_BY_LOCALE[locale];
+    return phrases[Math.floor(Math.random() * phrases.length)];
+}
+
+export function isStockCanvasText(text: string): boolean {
+    if (LEGACY_STOCK_TEXTS.has(text)) return true;
+    for (const locale of LOCALES) {
+        if (dictionaries[locale].newText === text) return true;
+        if (PHRASES_BY_LOCALE[locale].includes(text)) return true;
+    }
+    return false;
+}
+
+/** Map starter / random-pool canvas copy into the target locale. */
+export function localizeStockText(text: string, locale: Locale): string | null {
+    if (!isStockCanvasText(text)) return null;
+    const index = stockPhraseIndex(text);
+    const phrases = PHRASES_BY_LOCALE[locale];
+    if (index != null) return phrases[index % phrases.length];
+    if (
+        text === "Sample Text" ||
+        LOCALES.some((code) => dictionaries[code].newText === text)
+    ) {
+        return phrases[0];
+    }
+    return pickPhrase(locale);
+}

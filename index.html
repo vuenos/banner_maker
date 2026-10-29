@@ -9,8 +9,27 @@
           if (theme !== "dark" && theme !== "light") theme = "light";
           document.documentElement.dataset.theme = theme;
           document.documentElement.style.colorScheme = theme;
+          var locale = localStorage.getItem("banner-maker-locale");
+          if (
+            locale !== "en" &&
+            locale !== "ko" &&
+            locale !== "ja" &&
+            locale !== "es"
+          ) {
+            var primary =
+              navigator.language ||
+              (navigator.languages && navigator.languages[0]) ||
+              "en";
+            var code = String(primary).toLowerCase().split("-")[0];
+            if (code === "ko") locale = "ko";
+            else if (code === "ja") locale = "ja";
+            else if (code === "es") locale = "es";
+            else locale = "en";
+          }
+          document.documentElement.lang = locale;
         } catch (e) {
           document.documentElement.dataset.theme = "light";
+          document.documentElement.lang = "en";
         }
       })();
     </script>
@@ -37,9 +56,9 @@
     <meta property="og:image" content="https://www.thumbnail.co.kr/banner-og-image.png" />
     <meta property="og:image:secure_url" content="https://www.thumbnail.co.kr/banner-og-image.png" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1100" />
-    <meta property="og:image:height" content="740" />
-    <meta property="og:image:alt" content="유튜브 썸네일과 배너를 만드는 Thumbnail Maker" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="유튜브 썸네일 만들기 · 가입 없이 무료 PNG 저장" />
     <meta property="og:url" content="https://www.thumbnail.co.kr/" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="유튜브 썸네일 만들기 | 무료 배너·숏폼 제작" />
@@ -48,12 +67,17 @@
       content="유튜브 썸네일, 숏폼, 채널 배너를 브라우저에서 바로 만듭니다. 가입 없이 PNG로 저장하세요."
     />
     <meta name="twitter:image" content="https://www.thumbnail.co.kr/banner-og-image.png" />
-    <meta name="twitter:image:alt" content="유튜브 썸네일과 배너를 만드는 Thumbnail Maker" />
+    <meta name="twitter:image:alt" content="유튜브 썸네일 만들기 · 가입 없이 무료 PNG 저장" />
     <link rel="canonical" href="https://www.thumbnail.co.kr/" />
+    <link rel="alternate" hreflang="ko" href="https://www.thumbnail.co.kr/" />
+    <link rel="alternate" hreflang="en" href="https://www.thumbnail.co.kr/" />
+    <link rel="alternate" hreflang="ja" href="https://www.thumbnail.co.kr/" />
+    <link rel="alternate" hreflang="es" href="https://www.thumbnail.co.kr/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.thumbnail.co.kr/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Lobster&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
     <link href="/favicon.ico" rel="shortcut icon" />
@@ -64,21 +88,89 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Thumbnail Maker",
-        "alternateName": "유튜브 썸네일 만들기",
-        "url": "https://www.thumbnail.co.kr/",
-        "description": "유튜브 썸네일, 숏폼, 채널 배너를 브라우저에서 바로 만들고 PNG로 저장하는 무료 웹 앱입니다.",
-        "applicationCategory": "DesignApplication",
-        "operatingSystem": "Any",
-        "browserRequirements": "Requires JavaScript",
-        "inLanguage": ["ko", "en"],
-        "image": "https://www.thumbnail.co.kr/banner-og-image.png",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "KRW"
-        }
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "name": "Thumbnail Maker",
+            "alternateName": ["유튜브 썸네일 만들기", "무료 썸네일 제작"],
+            "url": "https://www.thumbnail.co.kr/",
+            "description": "유튜브 썸네일, 숏폼, 채널 배너를 브라우저에서 바로 만들고 PNG로 저장하는 무료 웹 앱입니다.",
+            "applicationCategory": "DesignApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": ["ko"],
+            "image": "https://www.thumbnail.co.kr/banner-og-image.png",
+            "screenshot": "https://www.thumbnail.co.kr/banner-og-image.png",
+            "featureList": [
+              "유튜브 썸네일 1280×720",
+              "숏폼·쇼츠 썸네일 1080×1920",
+              "채널 배너 2560×1440",
+              "다중 글자 레이어",
+              "스타일 프리셋",
+              "배경 사진·색",
+              "PNG 저장",
+              "가입 없이 무료"
+            ],
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "KRW"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "유튜브 썸네일 권장 크기는 얼마인가요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "유튜브는 1280×720(16:9)을 권장합니다. Thumbnail Maker 프리셋에서 바로 선택할 수 있습니다."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "정말 무료인가요? 가입이 필요한가요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "완전 무료이며 가입 없이 브라우저에서 편집하고 PNG로 저장할 수 있습니다."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "숏폼·쇼츠 썸네일도 만들 수 있나요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "1080×1920 세로 프리셋으로 숏폼·쇼츠·틱톡·릴스용 이미지를 만들 수 있습니다."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "채널 배너 안전 영역이 뭔가요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "채널 배너(2560×1440)에서 모든 기기에 보이는 1546×423 영역입니다. 점선으로 표시되며 저장 파일에는 들어가지 않습니다."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "글자를 여러 개 넣을 수 있나요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "여러 글자 레이어를 추가하고 예능 타이틀·스펙트럼·블러시 같은 스타일 프리셋을 적용할 수 있습니다."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "작업 내용이 사라지나요?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "편집 중인 내용은 브라우저에 자동 저장됩니다. 초기화 버튼을 누르면 처음 상태로 돌아갑니다."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
   </head>
@@ -89,8 +181,14 @@
         <h1>유튜브 썸네일 만들기 · Thumbnail Maker</h1>
         <p>
           유튜브 썸네일, 숏폼, 채널 배너를 브라우저에서 바로 제작할 수 있는 무료
-          도구입니다. 글자·색·배경 사진을 넣고 PNG로 저장하세요.
+          도구입니다. 글자·색·배경 사진을 넣고 PNG로 저장하세요. 가입이 필요
+          없습니다.
         </p>
+        <ul>
+          <li><a href="/youtube-thumbnail/">유튜브 썸네일 1280×720</a></li>
+          <li><a href="/shorts-thumbnail/">숏폼 썸네일 1080×1920</a></li>
+          <li><a href="/channel-banner/">채널 배너 2560×1440</a></li>
+        </ul>
         <p>
           JavaScript를 켜면 편집기를 사용할 수 있습니다.
           <a href="https://www.thumbnail.co.kr/">www.thumbnail.co.kr</a>

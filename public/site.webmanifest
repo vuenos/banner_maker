@@ -1,6 +1,6 @@
 {
-  "name": "Thumbnail Maker",
-  "short_name": "Thumbnail Maker",
+  "name": "유튜브 썸네일 만들기 - Thumbnail Maker",
+  "short_name": "썸네일 만들기",
   "description": "유튜브 썸네일, 숏폼, 채널 배너를 무료로 만들고 PNG로 저장합니다.",
   "lang": "ko",
   "start_url": "/",
@@ -23,7 +23,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#141518",
-  "background_color": "#141518",
+  "theme_color": "#aa55ff",
+  "background_color": "#f3f4f6",
   "display": "standalone"
 }

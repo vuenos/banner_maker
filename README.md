@@ -20,7 +20,7 @@ https://www.thumbnail.co.kr/
 
 ### UI
 
-- 라이트 테마가 기본이고, 상단에서 다크 테마로 전환할 수 있습니다. 선택은 브라우저에 저장됩니다.
+- 라이트 테마가 기본이고, 상단에서 다크 테마·한국어/English UI를 전환할 수 있습니다. 언어는 OS/브라우저가 한국어면 한국어, 그 외는 영어가 기본이며 수동 선택은 브라우저에 저장됩니다.
 - 왼쪽은 **크기 · 글자 · 배경** 아이콘 레일로 기능을 나누고, 패널에는 해당 컨트롤만 보여 줍니다.
 - 포인트 컬러는 로고 퍼플(`#AA55FF`)입니다. 저장 CTA·선택 상태·활성 탭에 공통으로 쓰입니다.
 - 패널 타이포와 버튼·카드를 키워 컨트롤이 잘 보이게 맞췄습니다.
@@ -29,6 +29,7 @@ https://www.thumbnail.co.kr/
 
 ### SEO
 
-- 한국어 중심 title·description, Open Graph, Twitter Card, JSON-LD(WebApplication)를 넣었습니다.
-- `sitemap.xml`과 `robots.txt` Sitemap 지시어를 제공합니다.
-- 정규 URL은 `https://www.thumbnail.co.kr/` 입니다.
+- H1은 `유튜브 썸네일 만들기`, title·description·Open Graph·Twitter Card·FAQ/WebApplication JSON-LD를 넣었습니다.
+- 홈 하단에 사용법·FAQ 정적 카피가 있고, KO/EN/JA/ES 랜딩(`/youtube-thumbnail/`, `/en|ja|es/youtube-thumbnail/` 등)과 hreflang을 제공합니다.
+- OG 이미지는 1200×630입니다. `sitemap.xml`(lastmod 포함)과 `robots.txt` Sitemap 지시어를 제공합니다.
+- 정규 URL은 `https://www.thumbnail.co.kr/` 입니다. 배포 후 Google·네이버에서 색인 요청을 권장합니다.
