@@ -867,8 +867,15 @@ function App() {
                                                                 <div
                                                                     className={`sample-card-preview sample-preview-${sample.id}`}
                                                                     style={{
-                                                                        background:
+                                                                        backgroundColor:
                                                                             sample.backgroundColor,
+                                                                        backgroundImage: sample.imageUrl
+                                                                            ? `url(${sample.imageUrl})`
+                                                                            : undefined,
+                                                                        backgroundSize:
+                                                                            "cover",
+                                                                        backgroundPosition:
+                                                                            "center",
                                                                     }}
                                                                 >
                                                                     <span className="sample-card-text">

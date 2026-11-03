@@ -6,18 +6,22 @@ import {
     sanitize,
 } from "./bannerModel";
 import { Locale, translate } from "./i18n";
+import sampleBgDrama from "./assets/sample-bg-drama.jpg";
+import sampleBgEntertainment from "./assets/sample-bg-entertainment.jpg";
+import sampleBgPlaylist from "./assets/sample-bg-playlist.jpg";
+import sampleBgSports from "./assets/sample-bg-sports.jpg";
 
 export type ThumbnailSampleId =
     | "entertainment"
     | "drama"
     | "sports"
-    | "talk";
+    | "playlist";
 
 export const THUMBNAIL_SAMPLE_IDS: ThumbnailSampleId[] = [
     "entertainment",
     "drama",
     "sports",
-    "talk",
+    "playlist",
 ];
 
 export type ThumbnailSample = {
@@ -25,6 +29,7 @@ export type ThumbnailSample = {
     labelKey: string;
     tipKey: string;
     backgroundColor: string;
+    imageUrl: string;
 };
 
 export const THUMBNAIL_SAMPLES: ThumbnailSample[] = [
@@ -33,24 +38,28 @@ export const THUMBNAIL_SAMPLES: ThumbnailSample[] = [
         labelKey: "sampleEntertainment",
         tipKey: "sampleEntertainmentTip",
         backgroundColor: "#1c2333",
+        imageUrl: sampleBgEntertainment,
     },
     {
         id: "drama",
         labelKey: "sampleDrama",
         tipKey: "sampleDramaTip",
         backgroundColor: "#0a0a0a",
+        imageUrl: sampleBgDrama,
     },
     {
         id: "sports",
         labelKey: "sampleSports",
         tipKey: "sampleSportsTip",
         backgroundColor: "#243040",
+        imageUrl: sampleBgSports,
     },
     {
-        id: "talk",
-        labelKey: "sampleTalk",
-        tipKey: "sampleTalkTip",
-        backgroundColor: "#1f8fad",
+        id: "playlist",
+        labelKey: "samplePlaylist",
+        tipKey: "samplePlaylistTip",
+        backgroundColor: "#3a2a18",
+        imageUrl: sampleBgPlaylist,
     },
 ];
 
@@ -70,6 +79,7 @@ export function buildThumbnailSample(
     const canvas = { width, height };
     const sample = THUMBNAIL_SAMPLES.find((item) => item.id === id);
     const backgroundColor = sample?.backgroundColor ?? "#111111";
+    const imageUrl = sample?.imageUrl ?? "";
     const t = (key: string) => translate(locale, key);
 
     let texts: TextLayer[] = [];
@@ -102,20 +112,23 @@ export function buildThumbnailSample(
                 ),
                 "hot",
             ),
-            applyTextStyle(
-                layer(
-                    {
-                        text: t("sampleText_entertainment_3"),
-                        fontSize: 42,
-                        fontFamily: "Do Hyeon",
-                        align: "right",
-                        offsetX: 420,
-                        offsetY: -220,
-                    },
-                    canvas,
+            {
+                ...applyTextStyle(
+                    layer(
+                        {
+                            text: t("sampleText_entertainment_3"),
+                            fontSize: 42,
+                            fontFamily: "Do Hyeon",
+                            align: "right",
+                            offsetX: 420,
+                            offsetY: -220,
+                        },
+                        canvas,
+                    ),
+                    "impact",
                 ),
-                "impact",
-            ),
+                strokeWidth: 4,
+            },
         ];
     } else if (id === "drama") {
         texts = [
@@ -128,7 +141,7 @@ export function buildThumbnailSample(
                         fontColor: "#111111",
                         align: "center",
                         offsetY: -250,
-                        strokeWidth: 18,
+                        strokeWidth: 8,
                         strokeColor: "#ffe400",
                         shadow: false,
                         styleId: "plain",
@@ -136,19 +149,22 @@ export function buildThumbnailSample(
                     canvas,
                 ),
             },
-            applyTextStyle(
-                layer(
-                    {
-                        text: t("sampleText_drama_2"),
-                        fontSize: 56,
-                        fontFamily: "Do Hyeon",
-                        align: "center",
-                        offsetY: -170,
-                    },
-                    canvas,
+            {
+                ...applyTextStyle(
+                    layer(
+                        {
+                            text: t("sampleText_drama_2"),
+                            fontSize: 56,
+                            fontFamily: "Do Hyeon",
+                            align: "center",
+                            offsetY: -170,
+                        },
+                        canvas,
+                    ),
+                    "impact",
                 ),
-                "impact",
-            ),
+                strokeWidth: 5,
+            },
             {
                 ...layer(
                     {
@@ -222,34 +238,36 @@ export function buildThumbnailSample(
                     canvas,
                 ),
             },
-            applyTextStyle(
-                layer(
-                    {
-                        text: t("sampleText_sports_3"),
-                        fontSize: 28,
-                        fontFamily: "Anton",
-                        align: "right",
-                        offsetX: 480,
-                        offsetY: -280,
-                    },
-                    canvas,
+            {
+                ...applyTextStyle(
+                    layer(
+                        {
+                            text: t("sampleText_sports_3"),
+                            fontSize: 28,
+                            fontFamily: "Anton",
+                            align: "right",
+                            offsetX: 480,
+                            offsetY: -280,
+                        },
+                        canvas,
+                    ),
+                    "impact",
                 ),
-                "impact",
-            ),
+                strokeWidth: 3,
+            },
         ];
     } else {
         texts = [
             {
                 ...layer(
                     {
-                        text: t("sampleText_talk_1"),
-                        fontSize: 36,
-                        fontFamily: "Do Hyeon",
+                        text: t("sampleText_playlist_1"),
+                        fontSize: 22,
+                        fontFamily: "Oswald",
                         fontColor: "#ffffff",
                         align: "center",
-                        offsetX: 220,
-                        offsetY: 120,
-                        strokeWidth: 8,
+                        offsetY: -210,
+                        strokeWidth: 0,
                         strokeColor: "#111111",
                         shadow: true,
                         styleId: "plain",
@@ -257,20 +275,57 @@ export function buildThumbnailSample(
                     canvas,
                 ),
             },
-            applyTextStyle(
-                layer(
+            {
+                ...layer(
                     {
-                        text: t("sampleText_talk_2"),
-                        fontSize: 120,
-                        fontFamily: "Black Han Sans",
+                        text: t("sampleText_playlist_2"),
+                        fontSize: 132,
+                        fontFamily: "PT Serif",
+                        fontColor: "#fff8e7",
                         align: "center",
-                        offsetX: 180,
-                        offsetY: 220,
+                        offsetY: -20,
+                        strokeWidth: 0,
+                        strokeColor: "#111111",
+                        shadow: true,
+                        styleId: "plain",
                     },
                     canvas,
                 ),
-                "impact",
-            ),
+            },
+            {
+                ...layer(
+                    {
+                        text: t("sampleText_playlist_3"),
+                        fontSize: 18,
+                        fontFamily: "Noto Sans KR",
+                        fontColor: "#ffffff",
+                        align: "center",
+                        offsetY: 230,
+                        strokeWidth: 0,
+                        strokeColor: "#111111",
+                        shadow: true,
+                        styleId: "plain",
+                    },
+                    canvas,
+                ),
+            },
+            {
+                ...layer(
+                    {
+                        text: t("sampleText_playlist_4"),
+                        fontSize: 18,
+                        fontFamily: "Noto Sans KR",
+                        fontColor: "#ffffff",
+                        align: "center",
+                        offsetY: 268,
+                        strokeWidth: 0,
+                        strokeColor: "#111111",
+                        shadow: true,
+                        styleId: "plain",
+                    },
+                    canvas,
+                ),
+            },
         ];
     }
 
@@ -279,7 +334,7 @@ export function buildThumbnailSample(
         height,
         backgroundColor,
         backgroundGradient: "",
-        imageUrl: "",
+        imageUrl,
         guide: null,
         texts,
         selectedId: texts[0]?.id,

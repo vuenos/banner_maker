@@ -208,8 +208,8 @@ const ko: Dict = {
     sampleDramaTip: "노란 하이라이트 + 붉은 타이틀 · 영화·드라마 톤",
     sampleSports: "스포츠 배너",
     sampleSportsTip: "청록·네이비 대비 문구 · 하이라이트 썸네일",
-    sampleTalk: "두꺼운 외곽선",
-    sampleTalkTip: "흰 글자 + 검정 외곽선 · 토크·리뷰 썸네일",
+    samplePlaylist: "playlist",
+    samplePlaylistTip: "세리프 타이틀 + 첨부형 트랙리스트 · 플레이리스트 썸네일",
     sampleText_entertainment_1: "솔직히",
     sampleText_entertainment_2: "내 알 바 아니오",
     sampleText_entertainment_3: "바람과함께",
@@ -220,8 +220,12 @@ const ko: Dict = {
     sampleText_sports_1: "눈은 타이거처럼",
     sampleText_sports_2: "다시 일어나!",
     sampleText_sports_3: "ROCKY",
-    sampleText_talk_1: "포스가",
-    sampleText_talk_2: "함께하길",
+    sampleText_playlist_1: "J A Z Z   P L A Y L I S T",
+    sampleText_playlist_2: "playlist",
+    sampleText_playlist_3:
+        "Valentine · About Time · Don't Know Why · That's All",
+    sampleText_playlist_4:
+        "Isn't She Lovely · Over the Rainbow · Misty · Fly Me to the Moon",
 };
 
 const en: Dict = {
@@ -377,8 +381,8 @@ const en: Dict = {
     sampleDramaTip: "Yellow highlight + bold red title · film/drama tone",
     sampleSports: "Sports banners",
     sampleSportsTip: "Cyan and navy contrast lines · highlight thumbnail",
-    sampleTalk: "Thick outline",
-    sampleTalkTip: "White type with black outline · talk/review style",
+    samplePlaylist: "playlist",
+    samplePlaylistTip: "Serif title + attachment-style tracklist · playlist thumbnail",
     sampleText_entertainment_1: "Frankly,",
     sampleText_entertainment_2: "I don't give a damn",
     sampleText_entertainment_3: "Gone",
@@ -389,8 +393,12 @@ const en: Dict = {
     sampleText_sports_1: "Eye of the tiger",
     sampleText_sports_2: "Get back up!",
     sampleText_sports_3: "ROCKY",
-    sampleText_talk_1: "May the",
-    sampleText_talk_2: "Force be",
+    sampleText_playlist_1: "J A Z Z   P L A Y L I S T",
+    sampleText_playlist_2: "playlist",
+    sampleText_playlist_3:
+        "Valentine · About Time · Don't Know Why · That's All",
+    sampleText_playlist_4:
+        "Isn't She Lovely · Over the Rainbow · Misty · Fly Me to the Moon",
 };
 
 const ja: Dict = {
@@ -546,8 +554,8 @@ const ja: Dict = {
     sampleDramaTip: "黄色ハイライト + 赤いタイトル · 映画・ドラマ調",
     sampleSports: "スポーツバナー",
     sampleSportsTip: "シアンとネイビーの対比 · ハイライト風",
-    sampleTalk: "太い輪郭",
-    sampleTalkTip: "白い文字 + 黒輪郭 · トーク・レビュー風",
+    samplePlaylist: "playlist",
+    samplePlaylistTip: "セリフタイトル + 添付風トラックリスト · プレイリスト風",
     sampleText_entertainment_1: "正直に言えば",
     sampleText_entertainment_2: "どうでもいい",
     sampleText_entertainment_3: "風と共に",
@@ -558,8 +566,12 @@ const ja: Dict = {
     sampleText_sports_1: "虎の目で",
     sampleText_sports_2: "また立ち上がれ！",
     sampleText_sports_3: "ROCKY",
-    sampleText_talk_1: "フォースと",
-    sampleText_talk_2: "共にあらん",
+    sampleText_playlist_1: "J A Z Z   P L A Y L I S T",
+    sampleText_playlist_2: "playlist",
+    sampleText_playlist_3:
+        "Valentine · About Time · Don't Know Why · That's All",
+    sampleText_playlist_4:
+        "Isn't She Lovely · Over the Rainbow · Misty · Fly Me to the Moon",
 };
 
 const es: Dict = {
@@ -716,8 +728,8 @@ const es: Dict = {
     sampleDramaTip: "Resalte amarillo + título rojo · tono cine/drama",
     sampleSports: "Banners deportivos",
     sampleSportsTip: "Contraste cian y navy · miniatura de highlights",
-    sampleTalk: "Contorno grueso",
-    sampleTalkTip: "Texto blanco con contorno negro · estilo talk/review",
+    samplePlaylist: "playlist",
+    samplePlaylistTip: "Título serif + lista tipo adjunto · miniatura de playlist",
     sampleText_entertainment_1: "Francamente,",
     sampleText_entertainment_2: "me importa un bledo",
     sampleText_entertainment_3: "Lo ido",
@@ -728,8 +740,12 @@ const es: Dict = {
     sampleText_sports_1: "Ojo de tigre",
     sampleText_sports_2: "¡Levántate!",
     sampleText_sports_3: "ROCKY",
-    sampleText_talk_1: "Que la Fuerza",
-    sampleText_talk_2: "te acompañe",
+    sampleText_playlist_1: "J A Z Z   P L A Y L I S T",
+    sampleText_playlist_2: "playlist",
+    sampleText_playlist_3:
+        "Valentine · About Time · Don't Know Why · That's All",
+    sampleText_playlist_4:
+        "Isn't She Lovely · Over the Rainbow · Misty · Fly Me to the Moon",
 };
 
 const dictionaries: Record<Locale, Dict> = { ko, en, ja, es };
@@ -885,8 +901,10 @@ const SAMPLE_TEXT_KEYS = [
     "sampleText_sports_1",
     "sampleText_sports_2",
     "sampleText_sports_3",
-    "sampleText_talk_1",
-    "sampleText_talk_2",
+    "sampleText_playlist_1",
+    "sampleText_playlist_2",
+    "sampleText_playlist_3",
+    "sampleText_playlist_4",
 ] as const;
 
 function sampleTextKeyFor(text: string): (typeof SAMPLE_TEXT_KEYS)[number] | null {
