@@ -2,7 +2,13 @@ import type { CSSProperties } from "react";
 
 export type Align = "left" | "center" | "right";
 export type Guide = "channel" | null;
-export type TextStyleId = "plain" | "variety" | "spectrum" | "blush";
+export type TextStyleId =
+    | "plain"
+    | "variety"
+    | "spectrum"
+    | "blush"
+    | "impact"
+    | "hot";
 
 export type TextLayer = {
     id: string;
@@ -23,11 +29,120 @@ export type Banner = {
     width: number;
     height: number;
     backgroundColor: string;
+    /** CSS gradient, e.g. linear-gradient(...). Empty = solid color only. */
+    backgroundGradient: string;
     imageUrl: string;
     guide: Guide;
     texts: TextLayer[];
     selectedId: string;
 };
+
+export const BG_GRADIENTS: {
+    id: string;
+    css: string;
+    fallback: string;
+}[] = [
+    {
+        id: "sunset",
+        css: "linear-gradient(135deg, #ff6b35 0%, #f7c948 55%, #ff4d6d 100%)",
+        fallback: "#ff6b35",
+    },
+    {
+        id: "ocean",
+        css: "linear-gradient(160deg, #00c6ff 0%, #0072ff 100%)",
+        fallback: "#0072ff",
+    },
+    {
+        id: "violet",
+        css: "linear-gradient(45deg, #cb21bd 0%, #5c1eed 100%)",
+        fallback: "#5c1eed",
+    },
+    {
+        id: "midnight",
+        css: "linear-gradient(180deg, #0f2027 0%, #203a43 50%, #2c5364 100%)",
+        fallback: "#203a43",
+    },
+    {
+        id: "mint",
+        css: "linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%)",
+        fallback: "#66a6ff",
+    },
+    {
+        id: "ember",
+        css: "linear-gradient(135deg, #1a0506 0%, #7a1014 45%, #ff4d4f 100%)",
+        fallback: "#7a1014",
+    },
+];
+
+export const DEFAULT_GRADIENT_FROM = "#ff6b35";
+export const DEFAULT_GRADIENT_TO = "#5c1eed";
+export const DEFAULT_GRADIENT_ANGLE = 135;
+
+const GRADIENT_HEX_RE = /#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
+
+function expandCssHex(color: string) {
+    if (/^#[0-9a-fA-F]{3}$/.test(color)) {
+        const red = color[1];
+        const green = color[2];
+        const blue = color[3];
+        return `#${red}${red}${green}${green}${blue}${blue}`.toLowerCase();
+    }
+    return color.toLowerCase();
+}
+
+/** Build a two-stop linear gradient used by the custom color pickers. */
+export function buildBgGradient(
+    from: string,
+    to: string,
+    angle = DEFAULT_GRADIENT_ANGLE,
+) {
+    const deg = Number.isFinite(angle) ? angle : DEFAULT_GRADIENT_ANGLE;
+    return `linear-gradient(${deg}deg, ${from} 0%, ${to} 100%)`;
+}
+
+/** Read first/last hex stops (and angle) from a CSS gradient string. */
+export function parseBgGradientColors(css: string): {
+    from: string;
+    to: string;
+    angle: number;
+} | null {
+    const trimmed = css.trim();
+    if (!trimmed) return null;
+    const hexes = trimmed.match(GRADIENT_HEX_RE);
+    if (!hexes || hexes.length < 2) return null;
+    const angleMatch = trimmed.match(/(-?\d+(?:\.\d+)?)deg/);
+    const angle = angleMatch ? Number(angleMatch[1]) : DEFAULT_GRADIENT_ANGLE;
+    return {
+        from: expandCssHex(hexes[0]),
+        to: expandCssHex(hexes[hexes.length - 1]),
+        angle: Number.isFinite(angle) ? angle : DEFAULT_GRADIENT_ANGLE,
+    };
+}
+
+export function bannerStageBackground(banner: Banner): CSSProperties {
+    if (banner.imageUrl) {
+        return {
+            backgroundColor: banner.backgroundColor,
+            backgroundImage: `url(${banner.imageUrl})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+        };
+    }
+    if (banner.backgroundGradient) {
+        return {
+            backgroundColor: banner.backgroundColor,
+            backgroundImage: banner.backgroundGradient,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+        };
+    }
+    return {
+        backgroundColor: banner.backgroundColor,
+        backgroundImage: "none",
+    };
+}
 
 export const MIN_SIZE = 64;
 export const MAX_SIZE = 4096;
@@ -39,15 +154,19 @@ export const CHANNEL_SAFE = { width: 1546, height: 423 };
 export const FONTS: { value: string; weight?: string }[] = [
     { value: "Black Han Sans" },
     { value: "Do Hyeon" },
+    { value: "Jua" },
+    { value: "Gugi" },
     { value: "Song Myung" },
     { value: "Yeon Sung" },
     { value: "Noto Sans KR", weight: "900" },
-    { value: "Noto Serif KR", weight: "700" },
+    { value: "Noto Serif KR", weight: "900" },
     { value: "East Sea Dokdo" },
     { value: "Single Day" },
     { value: "Nanum Pen Script" },
+    { value: "Anton" },
+    { value: "Oswald", weight: "700" },
     { value: "PT Serif" },
-    { value: "Roboto", weight: "700" },
+    { value: "Roboto", weight: "900" },
     { value: "Nunito", weight: "800" },
     { value: "Lobster" },
     { value: "Bebas Neue" },
@@ -82,6 +201,18 @@ export const TEXT_STYLES: {
         label: "블러시",
         tooltip: "흰→분홍 세로 그라데이션과 얇은 검정 외곽선",
         swatch: "linear-gradient(180deg, #ffffff, #ff6b8a)",
+    },
+    {
+        id: "impact",
+        label: "임팩트",
+        tooltip: "흰 글자 + 두꺼운 검정 외곽선 · 유튜브 썸네일 기본형",
+        swatch: "linear-gradient(180deg, #ffffff, #e8e8e8)",
+    },
+    {
+        id: "hot",
+        label: "강조 레드",
+        tooltip: "빨간 글자 + 두꺼운 검정 외곽선 · 핵심 단어 강조",
+        swatch: "linear-gradient(180deg, #ff4d4d, #e10600)",
     },
 ];
 
@@ -240,6 +371,26 @@ export function applyTextStyle(
                 strokeColor: "#111111",
                 shadow: true,
             };
+        case "impact":
+            return {
+                ...layer,
+                styleId,
+                fontFamily: "Black Han Sans",
+                fontColor: "#FFFFFF",
+                strokeWidth: 12,
+                strokeColor: "#111111",
+                shadow: true,
+            };
+        case "hot":
+            return {
+                ...layer,
+                styleId,
+                fontFamily: "Black Han Sans",
+                fontColor: "#FF1E1E",
+                strokeWidth: 12,
+                strokeColor: "#111111",
+                shadow: true,
+            };
         case "plain":
         default:
             return {
@@ -328,7 +479,14 @@ function clampOffset(value: unknown, size: number) {
     return Math.min(limit, Math.max(-limit, number));
 }
 
-const STYLE_IDS: TextStyleId[] = ["plain", "variety", "spectrum", "blush"];
+const STYLE_IDS: TextStyleId[] = [
+    "plain",
+    "variety",
+    "spectrum",
+    "blush",
+    "impact",
+    "hot",
+];
 
 export function createTextLayer(
     input: Partial<TextLayer> = {},
@@ -374,6 +532,7 @@ export const DEFAULT_BANNER: Banner = (() => {
         width: 1280,
         height: 720,
         backgroundColor: "#3d7eff",
+        backgroundGradient: "",
         imageUrl: "",
         guide: null,
         texts: [layer],
@@ -394,6 +553,7 @@ export function createFreshBanner(text = "Sample Text"): Banner {
         width: 1280,
         height: 720,
         backgroundColor: randomHex(),
+        backgroundGradient: "",
         imageUrl: "",
         guide: null,
         texts: [layer],
@@ -460,6 +620,16 @@ export function sanitize(input: Partial<Banner> | Record<string, unknown>): Bann
         ? (migrated.selectedId as string)
         : texts[0].id;
 
+    const rawGradient =
+        typeof migrated.backgroundGradient === "string"
+            ? migrated.backgroundGradient.trim()
+            : "";
+    const backgroundGradient =
+        rawGradient.startsWith("linear-gradient(") ||
+        rawGradient.startsWith("radial-gradient(")
+            ? rawGradient
+            : "";
+
     return {
         width,
         height,
@@ -467,6 +637,7 @@ export function sanitize(input: Partial<Banner> | Record<string, unknown>): Bann
             migrated.backgroundColor,
             DEFAULT_BANNER.backgroundColor,
         ),
+        backgroundGradient,
         imageUrl: typeof migrated.imageUrl === "string" ? migrated.imageUrl : "",
         guide,
         texts,

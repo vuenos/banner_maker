@@ -494,6 +494,50 @@ body {
   min-width: 0;
 }
 
+.bg-gradient-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.bg-gradient-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--studio-panel-border);
+  border-radius: var(--studio-radius);
+  background: var(--studio-surface);
+  color: var(--studio-text);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--studio-shadow);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.bg-gradient-card:hover {
+  background: var(--studio-card-hover);
+  border-color: var(--studio-hover-border);
+}
+
+.bg-gradient-card.is-active {
+  border-color: var(--studio-accent);
+  background: var(--studio-accent-soft);
+}
+
+.bg-gradient-swatch {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+}
+
+.bg-gradient-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .sample-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -545,7 +589,7 @@ body {
   user-select: none;
 }
 
-.sample-preview-variety .sample-card-text {
+.sample-preview-entertainment .sample-card-text {
   color: #ffd400;
   text-shadow:
     -2px -2px 0 #111,
@@ -555,28 +599,31 @@ body {
     3px 3px 0 rgba(0, 0, 0, 0.85);
 }
 
-.sample-preview-spectrum .sample-card-text {
-  background: linear-gradient(90deg, #00aeef, #2d3192, #92278f, #ec008c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 1px #fff) drop-shadow(1px 1px 0 #fff);
+.sample-preview-drama .sample-card-text {
+  color: #111;
+  background: #ffe400;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.sample-preview-blush .sample-card-text {
-  background: linear-gradient(180deg, #ffffff, #ff6b8a);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 0 #111);
+.sample-preview-sports .sample-card-text {
+  color: #0b1f4d;
+  background: #00e5ff;
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-size: 13px;
+  text-shadow: none;
 }
 
-.sample-preview-minimal .sample-card-text {
+.sample-preview-talk .sample-card-text {
   color: #fff;
-  font-weight: 700;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  text-shadow:
+    -2px -2px 0 #111,
+    2px -2px 0 #111,
+    -2px 2px 0 #111,
+    2px 2px 0 #111,
+    0 3px 8px rgba(0, 0, 0, 0.45);
 }
 
 .sample-card-name {

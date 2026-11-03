@@ -58,17 +58,24 @@ import { track } from "@vercel/analytics";
 import logoImg from "./assets/android-chrome-512x512.png";
 import {
     Align,
+    BG_GRADIENTS,
     CHANNEL_SAFE,
+    DEFAULT_GRADIENT_ANGLE,
+    DEFAULT_GRADIENT_FROM,
+    DEFAULT_GRADIENT_TO,
     FONTS,
     MAX_TEXTS,
     PRESETS,
     TEXT_STYLES,
     TextStyleId,
     applyTextStyle,
+    bannerStageBackground,
+    buildBgGradient,
     fontsHref,
     isGradientTextStyle,
     layerStrokeStyle,
     layerVisualStyle,
+    parseBgGradientColors,
     randomHex,
 } from "./bannerModel";
 import {
@@ -166,7 +173,7 @@ function SeoGuideBody({
     );
 }
 
-type Picker = "bg" | "font" | "stroke" | null;
+type Picker = "bg" | "font" | "stroke" | "gradFrom" | "gradTo" | null;
 type Zoom = "fit" | "50" | "100";
 type PanelTab = "canvas" | "text" | "background";
 type ThemeMode = "light" | "dark";
@@ -535,17 +542,60 @@ function App() {
         };
     }, [picker, placePicker]);
 
+    const gradientColors =
+        parseBgGradientColors(banner.backgroundGradient) ?? {
+            from: banner.backgroundColor || DEFAULT_GRADIENT_FROM,
+            to: DEFAULT_GRADIENT_TO,
+            angle: DEFAULT_GRADIENT_ANGLE,
+        };
+
     const pickerColor =
         picker === "font"
             ? selected.fontColor
             : picker === "stroke"
               ? selected.strokeColor
-              : banner.backgroundColor;
+              : picker === "gradFrom"
+                ? gradientColors.from
+                : picker === "gradTo"
+                  ? gradientColors.to
+                  : banner.backgroundColor;
 
     const onPickerChange = (color: { hex: string }) => {
         if (picker === "font") liveText({ fontColor: color.hex });
         else if (picker === "stroke") liveText({ strokeColor: color.hex });
-        else live({ backgroundColor: color.hex });
+        else if (picker === "gradFrom" || picker === "gradTo") {
+            const current =
+                parseBgGradientColors(banner.backgroundGradient) ?? {
+                    from: banner.backgroundColor || DEFAULT_GRADIENT_FROM,
+                    to: DEFAULT_GRADIENT_TO,
+                    angle: DEFAULT_GRADIENT_ANGLE,
+                };
+            const from = picker === "gradFrom" ? color.hex : current.from;
+            const to = picker === "gradTo" ? color.hex : current.to;
+            live({
+                backgroundColor: from,
+                backgroundGradient: buildBgGradient(from, to, current.angle),
+            });
+        } else live({ backgroundColor: color.hex, backgroundGradient: "" });
+    };
+
+    const openGradientPicker = (
+        stop: "gradFrom" | "gradTo",
+        anchor: HTMLElement,
+    ) => {
+        if (!banner.backgroundGradient) {
+            const from = banner.backgroundColor || DEFAULT_GRADIENT_FROM;
+            const to = DEFAULT_GRADIENT_TO;
+            live({
+                backgroundColor: from,
+                backgroundGradient: buildBgGradient(
+                    from,
+                    to,
+                    DEFAULT_GRADIENT_ANGLE,
+                ),
+            });
+        }
+        openPicker(stop, anchor);
     };
 
     const onGripDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
@@ -591,7 +641,10 @@ function App() {
                 height: banner.height,
                 windowWidth: Math.max(banner.width, window.innerWidth),
                 windowHeight: Math.max(banner.height, window.innerHeight),
-                backgroundColor: banner.backgroundColor,
+                backgroundColor:
+                    banner.imageUrl || banner.backgroundGradient
+                        ? null
+                        : banner.backgroundColor,
                 useCORS: true,
                 onclone: (_document, cloned) => {
                     const element = cloned as HTMLElement;
@@ -800,9 +853,7 @@ function App() {
                                                                     replaceBanner(
                                                                         buildThumbnailSample(
                                                                             sample.id,
-                                                                            t(
-                                                                                sample.textKey,
-                                                                            ),
+                                                                            locale,
                                                                         ),
                                                                     );
                                                                     setZoom(
@@ -1272,10 +1323,17 @@ function App() {
                                                 >
                                                     <span
                                                         className="colorChip"
-                                                        style={{
-                                                            backgroundColor:
-                                                                banner.backgroundColor,
-                                                        }}
+                                                        style={
+                                                            banner.backgroundGradient
+                                                                ? {
+                                                                      backgroundImage:
+                                                                          banner.backgroundGradient,
+                                                                  }
+                                                                : {
+                                                                      backgroundColor:
+                                                                          banner.backgroundColor,
+                                                                  }
+                                                        }
                                                     />
                                                     {t("backgroundColor")}
                                                 </Swatch>
@@ -1288,11 +1346,108 @@ function App() {
                                                         commit({
                                                             backgroundColor:
                                                                 randomHex(),
+                                                            backgroundGradient: "",
                                                         })
                                                     }
                                                 >
                                                     {t("randomBg")}
                                                 </Button>
+                                            </Tooltip>
+                                        </div>
+                                        <div className="control-label">
+                                            {t("bgGradients")}
+                                        </div>
+                                        <div className="bg-gradient-grid">
+                                            {BG_GRADIENTS.map((grad) => {
+                                                const active =
+                                                    !banner.imageUrl &&
+                                                    banner.backgroundGradient ===
+                                                        grad.css;
+                                                return (
+                                                    <Tooltip
+                                                        key={grad.id}
+                                                        title={t(
+                                                            `bgGrad_${grad.id}Tip`,
+                                                        )}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            className={`bg-gradient-card${active ? " is-active" : ""}`}
+                                                            aria-label={t(
+                                                                `bgGrad_${grad.id}`,
+                                                            )}
+                                                            aria-pressed={active}
+                                                            onClick={() =>
+                                                                commit({
+                                                                    backgroundColor:
+                                                                        grad.fallback,
+                                                                    backgroundGradient:
+                                                                        grad.css,
+                                                                })
+                                                            }
+                                                        >
+                                                            <span
+                                                                className="bg-gradient-swatch"
+                                                                style={{
+                                                                    backgroundImage:
+                                                                        grad.css,
+                                                                }}
+                                                            />
+                                                            <span className="bg-gradient-name">
+                                                                {t(
+                                                                    `bgGrad_${grad.id}`,
+                                                                )}
+                                                            </span>
+                                                        </button>
+                                                    </Tooltip>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className="control-label">
+                                            {t("bgGradCustom")}
+                                        </div>
+                                        <div className="swatch-row">
+                                            <Tooltip title={t("bgGradFromTip")}>
+                                                <Swatch
+                                                    type="button"
+                                                    aria-label={t("bgGradFrom")}
+                                                    onClick={(event) =>
+                                                        openGradientPicker(
+                                                            "gradFrom",
+                                                            event.currentTarget,
+                                                        )
+                                                    }
+                                                >
+                                                    <span
+                                                        className="colorChip"
+                                                        style={{
+                                                            backgroundColor:
+                                                                gradientColors.from,
+                                                        }}
+                                                    />
+                                                    {t("bgGradFrom")}
+                                                </Swatch>
+                                            </Tooltip>
+                                            <Tooltip title={t("bgGradToTip")}>
+                                                <Swatch
+                                                    type="button"
+                                                    aria-label={t("bgGradTo")}
+                                                    onClick={(event) =>
+                                                        openGradientPicker(
+                                                            "gradTo",
+                                                            event.currentTarget,
+                                                        )
+                                                    }
+                                                >
+                                                    <span
+                                                        className="colorChip"
+                                                        style={{
+                                                            backgroundColor:
+                                                                gradientColors.to,
+                                                        }}
+                                                    />
+                                                    {t("bgGradTo")}
+                                                </Swatch>
                                             </Tooltip>
                                         </div>
                                         <div className="control-label">
@@ -1391,13 +1546,7 @@ function App() {
                                         height: banner.height,
                                         transform: `scale(${scale})`,
                                         transformOrigin: "top left",
-                                        backgroundColor: banner.backgroundColor,
-                                        backgroundImage: banner.imageUrl
-                                            ? `url(${banner.imageUrl})`
-                                            : "none",
-                                        backgroundRepeat: "no-repeat",
-                                        backgroundSize: "cover",
-                                        backgroundPosition: "center",
+                                        ...bannerStageBackground(banner),
                                     }}
                                 >
                                     {banner.guide === "channel" ? (
