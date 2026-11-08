@@ -55,6 +55,7 @@ import {
 } from "@ant-design/icons";
 import { Analytics } from "@vercel/analytics/react";
 import { track } from "@vercel/analytics";
+import { trackDownloadImage } from "./analytics";
 import logoImg from "./assets/android-chrome-512x512.png";
 import {
     Align,
@@ -626,6 +627,7 @@ function App() {
         if (!node || exporting) return;
         setExporting(true);
         track("download", { width: banner.width, height: banner.height });
+        trackDownloadImage({ width: banner.width, height: banner.height });
         try {
             await Promise.all(
                 banner.texts.map((layer) =>
